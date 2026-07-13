@@ -49,9 +49,9 @@ type Props = {
   avoidSelector?: string
 }
 
-const COL_SPACING = 10.5
-const ROW_SPACING = 11.5
-const FONT_SIZE = 8.5
+const COL_SPACING = 8.5
+const ROW_SPACING = 9.5
+const FONT_SIZE = 7
 const MOUSE_RADIUS = 120
 const DAMPING = 0.94
 const HOME_STIFFNESS = 0.014
