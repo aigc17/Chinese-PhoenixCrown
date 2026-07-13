@@ -83,4 +83,23 @@ export const destinations: Destination[] = [
     // bright gold, pearl white
     curtainColors: ['#7d9bf0', '#5cc8e8', '#e8c46a', '#f2ecdc', '#7d9bf0', '#e8c46a'],
   },
+  {
+    id: 'xifeng',
+    name: 'Xifeng',
+    headingRest: 'stage-lit turquoise, ruby clusters, and tassels that dance with the drum',
+    phrase: '梨园惊梦 (Líyuán jīngmèng)',
+    phraseNote: 'A dream in the pear garden',
+    caption:
+      'Under the opera lamps, kingfisher clouds and pearl nets sway to a drumbeat older than the stage.',
+    roofSrc: '/images/crown-opera.png',
+    roofAlt: 'Chinese opera phoenix crown with turquoise cloud motifs, gold phoenixes, ruby clusters and long pearl tassel wings',
+    charPool:
+      '梨园惊梦戏台锣鼓水袖青衣花旦刀马武生老生净丑唱念做打生旦净末雅韵霓裳羽衣水磨腔昆曲京韵西皮二黄梆子板眼工尺曲牌折子戏出将入相粉墨登场余音绕梁字正腔圆声情并茂台上一分钟台下十年功红氍毹翎子帔靠蟒袍玉带凤目蛾眉贴片点绛唇勾脸谱亮相圆场走边趟马起霸',
+    curtainWidth: 0.82,
+    roofOverlap: 20,
+    theme: 'dark',
+    // inks pulled from the opera crown: turquoise cloud, gold phoenix,
+    // ruby bead, sapphire, pearl white
+    curtainColors: ['#4fc3e8', '#e8c46a', '#d4525a', '#6b8de0', '#f2ecdc', '#4fc3e8'],
+  },
 ]
