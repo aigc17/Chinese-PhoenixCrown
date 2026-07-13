@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { playCurtainBrush, unlockCurtainAudio } from '@/lib/curtain-audio'
 
 type Node = {
   x: number
@@ -409,6 +410,22 @@ export function TextCurtain({
       mouse.x = x
       mouse.y = y
       mouse.active = true
+
+      // rustle when the hand actually moves through hanging strands:
+      // inside the canvas, below the eave path, with real velocity
+      if (reveal > 0.5 && x >= 0 && x <= width && y >= 0 && y <= height) {
+        const speed = Math.sqrt(mouse.vx * mouse.vx + mouse.vy * mouse.vy)
+        if (speed > 2.5) {
+          const topY = contourYAt(x)
+          if (topY !== null && y > topY) {
+            playCurtainBrush(Math.min(1, speed / 26))
+          }
+        }
+      }
+    }
+
+    function onPointerDown() {
+      unlockCurtainAudio()
     }
 
     function onPointerLeave() {
@@ -462,6 +479,7 @@ export function TextCurtain({
     // sibling elements layered above the canvas
     window.addEventListener('pointermove', onPointerMove)
     window.addEventListener('pointerleave', onPointerLeave)
+    window.addEventListener('pointerdown', onPointerDown)
     document.addEventListener('mouseleave', onPointerLeave)
 
     return () => {
@@ -470,6 +488,7 @@ export function TextCurtain({
       ro.disconnect()
       window.removeEventListener('pointermove', onPointerMove)
       window.removeEventListener('pointerleave', onPointerLeave)
+      window.removeEventListener('pointerdown', onPointerDown)
       document.removeEventListener('mouseleave', onPointerLeave)
     }
   }, [charPool, color, colors, inkAlpha, luminous, contourSelector, avoidSelector])
