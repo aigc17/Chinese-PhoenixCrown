@@ -95,7 +95,8 @@ export function playCurtainBrush(intensity: number) {
   lastPlay = now
 
   const t = c.currentTime
-  const amp = 0.09 + Math.min(1, intensity) * 0.22
+  // quieter swish so the metallic chimes sit on top
+  const amp = 0.05 + Math.min(1, intensity) * 0.12
 
   // fabric swish: band-passed noise with a quick attack and soft tail
   const src = c.createBufferSource()
@@ -104,37 +105,74 @@ export function playCurtainBrush(intensity: number) {
 
   const bp = c.createBiquadFilter()
   bp.type = 'bandpass'
-  bp.frequency.value = 900 + intensity * 1400 + Math.random() * 400
-  bp.Q.value = 1.1
+  bp.frequency.value = 1400 + intensity * 1800 + Math.random() * 500
+  bp.Q.value = 1.4
 
   const g = c.createGain()
   g.gain.setValueAtTime(0, t)
-  g.gain.linearRampToValueAtTime(amp, t + 0.015)
-  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28)
+  g.gain.linearRampToValueAtTime(amp, t + 0.012)
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.2)
 
   src.connect(bp)
   bp.connect(g)
   g.connect(master)
-  src.start(t, Math.random() * 0.5, 0.35)
-  src.stop(t + 0.4)
+  src.start(t, Math.random() * 0.5, 0.25)
+  src.stop(t + 0.3)
 
-  // bead chime — frequent enough to actually be heard
-  if (intensity > 0.12 && Math.random() < 0.8) {
-    const osc = c.createOscillator()
-    osc.type = 'sine'
-    // pentatonic-ish set so overlapping chimes stay consonant
-    const notes = [1318.5, 1568, 1760, 2093, 2349]
-    osc.frequency.value = notes[Math.floor(Math.random() * notes.length)]
+  // metallic bell strike — real metal rings with inharmonic partials,
+  // so each chime layers a fundamental with detuned overtones that
+  // decay at different rates (bright ping, shimmering tail)
+  if (intensity > 0.08) {
+    // pentatonic-ish strike tones so overlapping chimes stay consonant
+    const notes = [1567.98, 1760, 2093, 2349.3, 2637, 3135.96]
+    const f0 = notes[Math.floor(Math.random() * notes.length)]
+    // inharmonic partial ratios measured from small bells/wind chimes
+    const partials = [
+      { ratio: 1, gain: 1, decay: 0.9 },
+      { ratio: 2.32, gain: 0.55, decay: 0.55 },
+      { ratio: 4.25, gain: 0.28, decay: 0.32 },
+      { ratio: 6.63, gain: 0.14, decay: 0.18 },
+    ]
+    const strikeAmp = 0.05 + intensity * 0.09
+    // slight random detune per strike so no two rings sound identical
+    const detune = 1 + (Math.random() - 0.5) * 0.015
 
-    const og = c.createGain()
-    const oAmp = 0.03 + intensity * 0.05
-    og.gain.setValueAtTime(0, t)
-    og.gain.linearRampToValueAtTime(oAmp, t + 0.008)
-    og.gain.exponentialRampToValueAtTime(0.0001, t + 0.7)
+    for (const p of partials) {
+      const osc = c.createOscillator()
+      osc.type = 'sine'
+      osc.frequency.value = f0 * p.ratio * detune
 
-    osc.connect(og)
-    og.connect(master)
-    osc.start(t)
-    osc.stop(t + 0.75)
+      const og = c.createGain()
+      const pAmp = strikeAmp * p.gain
+      og.gain.setValueAtTime(0, t)
+      // near-instant metallic attack
+      og.gain.linearRampToValueAtTime(pAmp, t + 0.003)
+      og.gain.exponentialRampToValueAtTime(0.0001, t + p.decay)
+
+      osc.connect(og)
+      og.connect(master)
+      osc.start(t)
+      osc.stop(t + p.decay + 0.05)
+    }
+
+    // occasional second softer strike a moment later — beads knocking
+    // against each other as the strand swings back
+    if (Math.random() < 0.35) {
+      const dt = 0.06 + Math.random() * 0.08
+      const f1 = notes[Math.floor(Math.random() * notes.length)]
+      const osc2 = c.createOscillator()
+      osc2.type = 'sine'
+      osc2.frequency.value = f1 * detune
+
+      const og2 = c.createGain()
+      og2.gain.setValueAtTime(0, t + dt)
+      og2.gain.linearRampToValueAtTime(strikeAmp * 0.5, t + dt + 0.003)
+      og2.gain.exponentialRampToValueAtTime(0.0001, t + dt + 0.6)
+
+      osc2.connect(og2)
+      og2.connect(master)
+      osc2.start(t + dt)
+      osc2.stop(t + dt + 0.65)
+    }
   }
 }
