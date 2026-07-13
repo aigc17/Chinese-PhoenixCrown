@@ -31,12 +31,12 @@ type Props = {
   avoidSelector?: string
 }
 
-const COL_SPACING = 13
-const ROW_SPACING = 14
-const FONT_SIZE = 11
-const MOUSE_RADIUS = 110
-const DAMPING = 0.93
-const HOME_STIFFNESS = 0.02
+const COL_SPACING = 10.5
+const ROW_SPACING = 11.5
+const FONT_SIZE = 8.5
+const MOUSE_RADIUS = 120
+const DAMPING = 0.94
+const HOME_STIFFNESS = 0.014
 const CONSTRAINT_ITERATIONS = 3
 const ALPHA_THRESHOLD = 40
 
@@ -196,10 +196,14 @@ export function TextCurtain({
         const lengthJitter = 0.72 + rand(c * 7.3) * 0.28
         const colRows = Math.max(3, Math.floor((available / ROW_SPACING) * lengthJitter))
 
+        // each column reads down the pool from its own offset, so the
+        // curtain looks like continuous vertical prose, not noise
+        const charOffset = Math.floor(rand(c * 3.7) * charPool.length)
+
         const chain: Node[] = []
         for (let r = 0; r < colRows; r++) {
           const seed = c * 131 + r * 17
-          const homeX = colX + (rand(seed + 3) - 0.5) * 3
+          const homeX = colX + (rand(seed + 3) - 0.5) * 1.6
           const homeY = startY + r * ROW_SPACING
           chain.push({
             // start collapsed at the top so the curtain "drops" in
@@ -209,9 +213,10 @@ export function TextCurtain({
             py: startY + r * 1.5,
             homeX,
             homeY,
-            char: charPool[Math.floor(rand(seed) * charPool.length)] ?? '文',
-            alpha: 0.4 + rand(seed + 1) * 0.55,
-            visible: rand(seed + 2) > 0.12,
+            char: charPool[(charOffset + r) % charPool.length] ?? '文',
+            // thin, even ink — subtle variation only
+            alpha: 0.5 + rand(seed + 1) * 0.22,
+            visible: rand(seed + 2) > 0.06,
           })
         }
         columns.push(chain)
@@ -244,7 +249,9 @@ export function TextCurtain({
           // idle sway
           vx += breeze * depth
 
-          // cursor parts the strands
+          // cursor gathers the strands like a hand brushing fabric:
+          // mostly dragged along with the cursor's motion, with a
+          // gentler outward part so columns bunch instead of scatter
           if (mouse.active) {
             const dx = n.x - mouse.x
             const dy = n.y - mouse.y
@@ -252,9 +259,9 @@ export function TextCurtain({
             if (d2 < r2 && d2 > 0.01) {
               const d = Math.sqrt(d2)
               const falloff = (1 - d / MOUSE_RADIUS) ** 2
-              const push = falloff * 2.6
-              vx += (dx / d) * push + mouse.vx * falloff * 0.22
-              vy += (dy / d) * push * 0.45 + mouse.vy * falloff * 0.12
+              const push = falloff * 1.4
+              vx += (dx / d) * push + mouse.vx * falloff * 0.38
+              vy += (dy / d) * push * 0.3 + mouse.vy * falloff * 0.2
             }
           }
 
@@ -301,7 +308,7 @@ export function TextCurtain({
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx!.clearRect(0, 0, width, height)
       if (reveal <= 0) return
-      ctx!.font = `${FONT_SIZE}px serif`
+      ctx!.font = `300 ${FONT_SIZE}px 'Songti SC', 'Noto Serif SC', serif`
       ctx!.textAlign = 'center'
       ctx!.textBaseline = 'middle'
 
@@ -318,13 +325,23 @@ export function TextCurtain({
           // fade behind overlapping copy, and during the drop-in reveal
           edgeFade *= avoidFadeAt(n.x, n.y) * reveal
 
+          // characters align to the strand's actual tangent so a swept
+          // strand reads like a curved ribbon of text
           let angle = 0
+          let bend = 0
           if (r > 0) {
             const p = chain[r - 1]
-            angle = Math.atan2(n.x - p.x, ROW_SPACING) * -0.8
+            const sdx = n.x - p.x
+            const sdy = n.y - p.y
+            angle = Math.atan2(sdx, Math.max(sdy, 0.001)) * -1
+            // how far the strand is from hanging straight (0..1)
+            bend = Math.min(1, Math.abs(sdx) / ROW_SPACING)
           }
 
-          ctx!.globalAlpha = n.alpha * edgeFade
+          // bunched, curving strands darken like gathered ink
+          const inkGain = 1 + bend * 0.7
+
+          ctx!.globalAlpha = Math.min(1, n.alpha * inkGain) * edgeFade
           if (angle !== 0) {
             ctx!.save()
             ctx!.translate(n.x, n.y)
