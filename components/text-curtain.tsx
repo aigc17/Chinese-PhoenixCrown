@@ -24,6 +24,11 @@ type Props = {
    * bottom contour; columns with no image above them are clipped.
    */
   contourSelector?: string
+  /**
+   * CSS selector for elements (headline, captions) the curtain should
+   * fade out behind so overlapping copy stays readable.
+   */
+  avoidSelector?: string
 }
 
 const COL_SPACING = 13
@@ -47,6 +52,7 @@ export function TextCurtain({
   className,
   color = '#4a3a28',
   contourSelector,
+  avoidSelector,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -70,6 +76,46 @@ export function TextCurtain({
     let contourPixels: Uint8ClampedArray | null = null
     let contourW = 0
     let contourH = 0
+
+    // the curtain stays invisible until the roof image has loaded and
+    // its contour is sampled, then fades in after the roof drops
+    let reveal = 0
+    let revealAt = Infinity
+
+    // canvas-space rects (headline, captions) the strands fade behind
+    let avoidRects: { left: number; top: number; right: number; bottom: number }[] = []
+    const AVOID_FEATHER = 48
+
+    function sampleAvoidRects() {
+      avoidRects = []
+      if (!avoidSelector) return
+      const canvasRect = canvas!.getBoundingClientRect()
+      document.querySelectorAll(avoidSelector).forEach((el) => {
+        const r = el.getBoundingClientRect()
+        if (r.width === 0 || r.height === 0) return
+        avoidRects.push({
+          left: r.left - canvasRect.left,
+          top: r.top - canvasRect.top,
+          right: r.right - canvasRect.left,
+          bottom: r.bottom - canvasRect.top,
+        })
+      })
+    }
+
+    /** 1 outside copy blocks, fading to ~0 inside them */
+    function avoidFadeAt(x: number, y: number): number {
+      let fade = 1
+      for (const r of avoidRects) {
+        const dx = Math.max(r.left - x, 0, x - r.right)
+        const dy = Math.max(r.top - y, 0, y - r.bottom)
+        const d = Math.sqrt(dx * dx + dy * dy)
+        if (d < AVOID_FEATHER) {
+          const f = 0.06 + (d / AVOID_FEATHER) * 0.94
+          if (f < fade) fade = f
+        }
+      }
+      return fade
+    }
 
     function rand(seed: number) {
       const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453
@@ -128,6 +174,8 @@ export function TextCurtain({
       dpr = Math.min(window.devicePixelRatio || 1, 2)
       canvas!.width = Math.round(width * dpr)
       canvas!.height = Math.round(height * dpr)
+
+      sampleAvoidRects()
 
       const colCount = Math.max(1, Math.floor(width / COL_SPACING))
       const xOffset = (width - (colCount - 1) * COL_SPACING) / 2
@@ -252,6 +300,7 @@ export function TextCurtain({
     function draw() {
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx!.clearRect(0, 0, width, height)
+      if (reveal <= 0) return
       ctx!.font = `${FONT_SIZE}px serif`
       ctx!.textAlign = 'center'
       ctx!.textBaseline = 'middle'
@@ -264,7 +313,10 @@ export function TextCurtain({
 
           // fade the strand out toward its ragged bottom edge
           const tail = r / chain.length
-          const edgeFade = tail > 0.75 ? 1 - (tail - 0.75) / 0.25 : 1
+          let edgeFade = tail > 0.75 ? 1 - (tail - 0.75) / 0.25 : 1
+
+          // fade behind overlapping copy, and during the drop-in reveal
+          edgeFade *= avoidFadeAt(n.x, n.y) * reveal
 
           let angle = 0
           if (r > 0) {
@@ -291,7 +343,12 @@ export function TextCurtain({
 
     function loop() {
       if (!running) return
-      step()
+      // hold the physics until the reveal starts so the strands are
+      // still collapsed at the eave when they fade in and drop
+      if (performance.now() >= revealAt) {
+        if (reveal < 1) reveal = Math.min(1, reveal + 0.025)
+        step()
+      }
       draw()
       raf = requestAnimationFrame(loop)
     }
@@ -322,19 +379,23 @@ export function TextCurtain({
     function initContour() {
       if (!contourSelector) {
         build()
+        revealAt = performance.now()
         return
       }
       const img = document.querySelector(contourSelector) as HTMLImageElement | null
       if (img && img.complete && img.naturalWidth > 0) {
         sampleContourImage(img)
         build()
+        // let the roof settle before the strands drop from its path
+        revealAt = performance.now() + 380
       } else if (img) {
-        build() // provisional flat build while the roof loads
+        // nothing renders until the roof has loaded — no flat curtain flash
         img.addEventListener(
           'load',
           () => {
             sampleContourImage(img)
             build()
+            revealAt = performance.now() + 380
           },
           { once: true },
         )
@@ -366,7 +427,7 @@ export function TextCurtain({
       window.removeEventListener('pointerleave', onPointerLeave)
       document.removeEventListener('mouseleave', onPointerLeave)
     }
-  }, [charPool, color, contourSelector])
+  }, [charPool, color, contourSelector, avoidSelector])
 
   return (
     <canvas

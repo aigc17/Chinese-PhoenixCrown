@@ -31,6 +31,7 @@ export function DestinationScene({ destination }: { destination: Destination }) 
           charPool={destination.charPool}
           color="#4a3a28"
           contourSelector={`#roof-${destination.id}`}
+          avoidSelector="[data-curtain-avoid]"
         />
       </div>
 
@@ -49,7 +50,10 @@ export function DestinationScene({ destination }: { destination: Destination }) 
       </div>
 
       {/* left copy block */}
-      <div className="absolute bottom-[8%] left-6 z-20 max-w-[300px] scene-in md:left-10 md:max-w-[360px]">
+      <div
+        data-curtain-avoid
+        className="absolute bottom-[8%] left-6 z-20 max-w-[300px] scene-in md:left-10 md:max-w-[360px]"
+      >
         <p className="mb-4 font-mono text-[11px] text-muted-foreground">
           <span className="text-accent">{destination.phrase}</span> {destination.phraseNote}
         </p>
@@ -61,7 +65,10 @@ export function DestinationScene({ destination }: { destination: Destination }) 
       </div>
 
       {/* bottom-right caption */}
-      <p className="absolute bottom-[8%] right-6 z-20 max-w-[220px] scene-in font-mono text-[11px] leading-relaxed text-muted-foreground md:right-10">
+      <p
+        data-curtain-avoid
+        className="absolute bottom-[8%] right-6 z-20 max-w-[220px] scene-in font-mono text-[11px] leading-relaxed text-muted-foreground md:right-10"
+      >
         {destination.caption}
       </p>
     </div>
