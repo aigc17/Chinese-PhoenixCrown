@@ -50,28 +50,11 @@ export function DestinationScene({ destination }: { destination: Destination }) 
         />
       </div>
 
-      {/* left copy block */}
-      <div
-        data-curtain-avoid
-        className="absolute bottom-[8%] left-6 z-20 max-w-[300px] scene-in md:left-10 md:max-w-[360px]"
-      >
-        <p className="mb-4 font-mono text-[11px] text-muted-foreground">
-          <span className="text-accent">{destination.phrase}</span> {destination.phraseNote}
-        </p>
-        <h1 className="font-serif text-4xl leading-[1.05] text-foreground text-balance md:text-[52px]">
-          {destination.name}
-          <span className="text-muted-foreground"> —— </span>
-          {destination.headingRest}
-        </h1>
-      </div>
-
-      {/* bottom-right caption */}
-      <p
-        data-curtain-avoid
-        className="absolute bottom-[8%] right-6 z-20 max-w-[220px] scene-in font-mono text-[11px] leading-relaxed text-muted-foreground md:right-10"
-      >
-        {destination.caption}
-      </p>
+      {/* copy blocks (headline + caption) hidden for now per design direction;
+          h1 kept visually hidden for accessibility/SEO */}
+      <h1 className="sr-only">
+        {destination.name} —— {destination.headingRest}
+      </h1>
     </div>
   )
 }
