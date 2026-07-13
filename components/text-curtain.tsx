@@ -14,6 +14,8 @@ type Node = {
   alpha: number
   visible: boolean
   color: string
+  /** cached atlas source rect — avoids Map lookups in the draw loop */
+  cell: { sx: number; sy: number } | null
 }
 
 type Props = {
@@ -55,7 +57,7 @@ const FONT_SIZE = 7
 const MOUSE_RADIUS = 120
 const DAMPING = 0.94
 const HOME_STIFFNESS = 0.014
-const CONSTRAINT_ITERATIONS = 3
+const CONSTRAINT_ITERATIONS = 2
 const ALPHA_THRESHOLD = 40
 
 /**
@@ -242,7 +244,9 @@ export function TextCurtain({
       const rect = canvas!.getBoundingClientRect()
       width = rect.width
       height = rect.height
-      dpr = Math.min(window.devicePixelRatio || 1, 2)
+      // 1.5x is visually indistinguishable for 7px glyphs but cuts
+      // canvas fill cost by ~44% versus 2x on retina screens
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5)
       canvas!.width = Math.round(width * dpr)
       canvas!.height = Math.round(height * dpr)
 
@@ -285,6 +289,7 @@ export function TextCurtain({
               ? colors[Math.floor(rand(c * 13.7 + Math.floor(r / 6) * 5.1) * colors.length)]
               : color
 
+          const ch = charPool[(charOffset + r) % charPool.length] ?? '文'
           chain.push({
             // start collapsed at the top so the curtain "drops" in
             x: homeX,
@@ -293,11 +298,12 @@ export function TextCurtain({
             py: startY + r * 1.5,
             homeX,
             homeY,
-            char: charPool[(charOffset + r) % charPool.length] ?? '文',
+            char: ch,
             // uniform ink — every character the same shade
             alpha: inkAlpha,
             visible: rand(seed + 2) > 0.06,
             color: ink,
+            cell: atlasMap.get(`${ch}|${ink}`) ?? null,
           })
         }
         columns.push(chain)
@@ -407,7 +413,7 @@ export function TextCurtain({
           if (hasAvoid) edgeFade *= avoidFadeAt(n.x, n.y)
           edgeFade *= reveal
 
-          const cell = atlasMap.get(`${n.char}|${n.color}`)
+          const cell = n.cell
           if (!cell) continue
 
           // characters align to the strand's actual tangent so a swept
@@ -420,9 +426,13 @@ export function TextCurtain({
             angle = Math.atan2(sdx, Math.max(sdy, 0.001)) * -1
           }
 
-          ctx!.globalAlpha = n.alpha * edgeFade
-          // stamp the pre-rasterized glyph — far cheaper than fillText
-          if (angle > 0.03 || angle < -0.03) {
+          const a = n.alpha * edgeFade
+          if (a < 0.02) continue
+          ctx!.globalAlpha = a
+          // stamp the pre-rasterized glyph — far cheaper than fillText;
+          // wider rotation threshold keeps most stamps on the fast
+          // untransformed path
+          if (angle > 0.06 || angle < -0.06) {
             const cos = Math.cos(angle)
             const sin = Math.sin(angle)
             ctx!.setTransform(dpr * cos, dpr * sin, -dpr * sin, dpr * cos, dpr * n.x, dpr * n.y)
