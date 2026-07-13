@@ -113,7 +113,7 @@ export const destinations: Destination[] = [
     roofSrc: '/images/crown-jade.png',
     roofAlt: 'Jade-green phoenix crown with peacock feather motifs, jade beads, pearls and long gold tassels',
     charPool:
-      '翠羽明珰孔雀开屏碧玉玲珑翡翠琉璃春水初生绿云扰扰青鸾起舞玉露金风兰叶葳蕤桂华秋皎池塘生春草园柳变鸣禽曲径通幽处禅房花木深绿竹入幽径青萝拂行衣蕉叶覆鹿松风煮茗竹雨谈诗兰亭修禊曲水流觞茂林修竹清流激湍映带左右天朗气清惠风和畅仰观宇宙俯察品类',
+      '翠羽明珰孔雀开屏碧玉玲珑翡翠琉璃春水初生绿云扰扰青鸾起舞玉露金风兰叶葳蕤桂华秋皎池塘生春草园柳变鸣禽曲径通幽处禅房花木深绿竹入幽径青萝拂行衣蕉叶覆鹿松风煮茗竹雨谈诗兰亭修禊曲���流觞茂林修竹清流激湍映带左右天朗气清惠风和畅仰观宇宙俯察品类',
     curtainWidth: 0.8,
     roofOverlap: 20,
     theme: 'dark',
@@ -174,5 +174,24 @@ export const destinations: Destination[] = [
     // inks from the bridal crown: filigree gold, peach shell pink,
     // pearl white, pale aqua blossom
     curtainColors: ['#e8b84b', '#eda8a0', '#f2ecdc', '#a8d8d0', '#e8b84b', '#eda8a0'],
+  },
+  {
+    id: 'fenghou',
+    name: 'Fenghou',
+    headingRest: 'nine dragons in gold, kingfisher gardens, and pearls sown like stars',
+    phrase: '母仪天下 (Mǔyí tiānxià)',
+    phraseNote: 'Mother of all under heaven',
+    caption:
+      'Gold dragons prowl above kingfisher meadows, where sapphires and rubies bloom in rings of seed pearl.',
+    roofSrc: '/images/crown-empress.png',
+    roofAlt: 'Ming empress phoenix crown with gold filigree dragons, kingfisher-blue enamel flowers, seed pearls, sapphires, rubies and a coral-red base band',
+    charPool:
+      '母仪天下九龙四凤翚翟褘衣珠翠点染龙翔凤舞金龙衔珠翠云铺顶宝钿花树博鬓垂珠青纁玉佩山河永固社稷安宁凤印玺绶椒房殿宇长信宫灯坤宁昭阳德配天地泽被苍生垂帘听政懿旨凤诏册立大典宗庙礼乐钟鼎彝器玉圭金册翟车凤辇仪仗卤簿宫娥彩仗琼林玉树瑶台阆苑',
+    curtainWidth: 0.86,
+    roofOverlap: 20,
+    theme: 'dark',
+    // inks from the empress crown: kingfisher blue, malachite green,
+    // sapphire, ruby red, coral, seed pearl
+    curtainColors: ['#5c8fe0', '#4bab8a', '#3a5fc0', '#c05252', '#e08a7a', '#ede8d8'],
   },
 ]
