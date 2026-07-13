@@ -131,7 +131,7 @@ export const destinations: Destination[] = [
     roofSrc: '/images/crown-ice.png',
     roofAlt: 'Ice-blue and silver phoenix crown with frost-petal wings, sapphires and pale pearl chains',
     charPool:
-      '冰肌玉骨月明千里琼楼玉宇高处不胜寒起舞弄清影何似在人间银装素裹千树万树梨花开忽如一夜春风来北风卷地白草折胡天八月即飞雪瀚海阑干百丈冰愁云惨淡万里凝寒光照铁衣朔气传金柝雪拥蓝关马不前云横秦岭家何在梅须逊雪三分白雪却输梅一段香日暮苍山远天寒白屋贫柴门闻犬吠风雪夜归人',
+      '冰肌玉骨月明千里琼楼玉宇高处不胜寒起舞弄清影何似在人间银装素裹千树万树梨花开忽如一夜春风来北风卷地白草折胡天八月即飞雪瀚海阑干百丈冰愁云惨淡万里凝寒光照铁衣朔气传金柝雪拥��关马不前云横秦岭家何在梅须逊雪三分白雪却输梅一段香日暮苍山远天寒白屋贫柴门闻犬吠风雪夜归人',
     curtainWidth: 0.8,
     roofOverlap: 20,
     theme: 'dark',
@@ -155,5 +155,24 @@ export const destinations: Destination[] = [
     theme: 'dark',
     // inks from the gold crown: imperial gold, warm brass, pearl cream
     curtainColors: ['#e8b84b', '#f2ecdc', '#c9973a', '#f7e9c4', '#e8b84b', '#d8c8a0'],
+  },
+  {
+    id: 'jinzan',
+    name: 'Jinzan',
+    headingRest: 'chrysanthemum gold, peach-shell dew, and wings that trail like dawn clouds',
+    phrase: '金枝玉叶 (Jīnzhī yùyè)',
+    phraseNote: 'Branches of gold, leaves of jade',
+    caption:
+      'Ten thousand gold petals hold drops of peach shell, and pink wings sweep down like the first light of a wedding morning.',
+    roofSrc: '/images/crown-bridal.png',
+    roofAlt: 'Gold filigree bridal crown covered in chrysanthemum petals and pearls, with peach mother-of-pearl teardrops and long pink scale-patterned side wings',
+    charPool:
+      '金枝玉叶菊瓣累丝桃腮贝母十里红妆凤冠霞帔珠围翠绕花好月圆洞房花烛金玉良缘白首偕老琴瑟和鸣鸾凤和鸣秦晋之好天作之合佳偶天成郎才女貌举案齐眉相敬如宾百年好合早生贵子多子多福金玉满堂花开富贵吉祥如意龙凤呈祥双喜临门喜上眉梢红鸾星动良辰美景赏心乐事',
+    curtainWidth: 0.84,
+    roofOverlap: 20,
+    theme: 'dark',
+    // inks from the bridal crown: filigree gold, peach shell pink,
+    // pearl white, pale aqua blossom
+    curtainColors: ['#e8b84b', '#eda8a0', '#f2ecdc', '#a8d8d0', '#e8b84b', '#eda8a0'],
   },
 ]
