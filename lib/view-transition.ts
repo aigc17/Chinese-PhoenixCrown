@@ -8,7 +8,7 @@ import { flushSync } from 'react-dom'
  * morph smoothly between layouts — the "magic move" effect.
  * Falls back to an instant update on unsupported browsers.
  */
-export function withViewTransition(update: () => void) {
+export function withViewTransition(update: () => void): boolean {
   const doc = document as Document & {
     startViewTransition?: (cb: () => void) => void
   }
@@ -16,7 +16,8 @@ export function withViewTransition(update: () => void) {
     doc.startViewTransition(() => {
       flushSync(update)
     })
-  } else {
-    update()
+    return true
   }
+  update()
+  return false
 }

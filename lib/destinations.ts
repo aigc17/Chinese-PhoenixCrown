@@ -126,9 +126,9 @@ export const destinations: Destination[] = [
     curtainWidth: 0.84,
     roofOverlap: 20,
     theme: 'dark',
-    // inks from the bridal crown: filigree gold, peach shell pink,
-    // pearl white, pale aqua blossom
-    curtainColors: ['#e8b84b', '#eda8a0', '#f2ecdc', '#a8d8d0', '#e8b84b', '#eda8a0'],
+    // dominated by bright filigree gold, with rare accents of peach
+    // shell and pearl so the curtain reads as spun gold
+    curtainColors: ['#f0c552', '#f5d478', '#e8b84b', '#f0c552', '#f5d478', '#eda8a0', '#f0c552', '#f7e9c4'],
   },
   {
     id: 'fenghou',

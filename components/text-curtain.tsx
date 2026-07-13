@@ -388,14 +388,10 @@ export function TextCurtain({
     function draw() {
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx!.clearRect(0, 0, width, height)
-      if (reveal <= 0) return
-      // luminous scenes use a heavier stroke so thin glyphs don't get
-      // swallowed by the dark background's antialiasing. The glow itself
-      // is a GPU CSS drop-shadow on the canvas element — canvas shadowBlur
-      // is per-glyph software blur and destroys frame rate.
-      ctx!.font = `${luminous ? 500 : 300} ${FONT_SIZE}px 'Songti SC', 'Noto Serif SC', serif`
-      ctx!.textAlign = 'center'
-      ctx!.textBaseline = 'middle'
+      if (reveal <= 0 || !atlas) return
+
+      const half = atlasCellCss / 2
+      const hasAvoid = avoidRects.length > 0
 
       for (let c = 0; c < columns.length; c++) {
         const chain = columns[c]
@@ -408,7 +404,11 @@ export function TextCurtain({
           let edgeFade = tail > 0.75 ? 1 - (tail - 0.75) / 0.25 : 1
 
           // fade behind overlapping copy, and during the drop-in reveal
-          edgeFade *= avoidFadeAt(n.x, n.y) * reveal
+          if (hasAvoid) edgeFade *= avoidFadeAt(n.x, n.y)
+          edgeFade *= reveal
+
+          const cell = atlasMap.get(`${n.char}|${n.color}`)
+          if (!cell) continue
 
           // characters align to the strand's actual tangent so a swept
           // strand reads like a curved ribbon of text
@@ -421,17 +421,15 @@ export function TextCurtain({
           }
 
           ctx!.globalAlpha = n.alpha * edgeFade
-          ctx!.fillStyle = n.color
-          // rotate only when visibly bent — setTransform is cheaper
-          // than save/translate/rotate/restore per glyph
+          // stamp the pre-rasterized glyph — far cheaper than fillText
           if (angle > 0.03 || angle < -0.03) {
             const cos = Math.cos(angle)
             const sin = Math.sin(angle)
             ctx!.setTransform(dpr * cos, dpr * sin, -dpr * sin, dpr * cos, dpr * n.x, dpr * n.y)
-            ctx!.fillText(n.char, 0, 0)
+            ctx!.drawImage(atlas, cell.sx, cell.sy, atlasCell, atlasCell, -half, -half, atlasCellCss, atlasCellCss)
             ctx!.setTransform(dpr, 0, 0, dpr, 0, 0)
           } else {
-            ctx!.fillText(n.char, n.x, n.y)
+            ctx!.drawImage(atlas, cell.sx, cell.sy, atlasCell, atlasCell, n.x - half, n.y - half, atlasCellCss, atlasCellCss)
           }
         }
       }
