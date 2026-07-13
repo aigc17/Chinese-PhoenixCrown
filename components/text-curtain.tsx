@@ -18,6 +18,12 @@ type Props = {
   charPool: string
   className?: string
   color?: string
+  /**
+   * CSS selector for an <img> whose alpha silhouette the curtain
+   * should hang from. Each column's pin point follows the image's
+   * bottom contour; columns with no image above them are clipped.
+   */
+  contourSelector?: string
 }
 
 const COL_SPACING = 13
@@ -27,13 +33,21 @@ const MOUSE_RADIUS = 110
 const DAMPING = 0.93
 const HOME_STIFFNESS = 0.02
 const CONSTRAINT_ITERATIONS = 3
+const ALPHA_THRESHOLD = 40
 
 /**
- * A curtain of characters hanging from the top edge.
- * Each column is a verlet chain pinned at the top; the cursor
- * parts the strands like fabric and they sway back into place.
+ * A curtain of characters. Each column is a verlet chain pinned at
+ * the top; the cursor parts the strands like fabric and they sway
+ * back into place. When contourSelector is provided, the pins trace
+ * the silhouette (bottom edge) of that image, so the curtain hangs
+ * from the path of the roof rather than a straight line.
  */
-export function TextCurtain({ charPool, className, color = '#4a3a28' }: Props) {
+export function TextCurtain({
+  charPool,
+  className,
+  color = '#4a3a28',
+  contourSelector,
+}: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -52,9 +66,59 @@ export function TextCurtain({ charPool, className, color = '#4a3a28' }: Props) {
 
     const mouse = { x: -9999, y: -9999, vx: 0, vy: 0, active: false }
 
+    // alpha map of the contour image, sampled once per image load
+    let contourPixels: Uint8ClampedArray | null = null
+    let contourW = 0
+    let contourH = 0
+
     function rand(seed: number) {
       const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453
       return x - Math.floor(x)
+    }
+
+    function sampleContourImage(img: HTMLImageElement) {
+      const w = img.naturalWidth
+      const h = img.naturalHeight
+      if (!w || !h) return
+      const off = document.createElement('canvas')
+      off.width = w
+      off.height = h
+      const octx = off.getContext('2d', { willReadFrequently: true })
+      if (!octx) return
+      octx.drawImage(img, 0, 0)
+      try {
+        contourPixels = octx.getImageData(0, 0, w, h).data
+        contourW = w
+        contourH = h
+      } catch {
+        contourPixels = null
+      }
+    }
+
+    /**
+     * For a given canvas-space x, walk the contour image column from the
+     * bottom up and return the canvas-space y of the lowest opaque pixel
+     * (the roof's under-eave path). Returns null when nothing hangs there.
+     */
+    function contourYAt(canvasX: number): number | null {
+      if (!contourPixels || !contourSelector) return 0
+      const img = document.querySelector(contourSelector) as HTMLImageElement | null
+      if (!img) return 0
+      const imgRect = img.getBoundingClientRect()
+      const canvasRect = canvas!.getBoundingClientRect()
+      const pageX = canvasRect.left + canvasX
+      if (pageX < imgRect.left || pageX > imgRect.right) return null
+      const ix = Math.min(
+        contourW - 1,
+        Math.max(0, Math.round(((pageX - imgRect.left) / imgRect.width) * contourW)),
+      )
+      for (let iy = contourH - 1; iy >= 0; iy--) {
+        if (contourPixels[(iy * contourW + ix) * 4 + 3] > ALPHA_THRESHOLD) {
+          const pageY = imgRect.top + (iy / contourH) * imgRect.height
+          return pageY - canvasRect.top
+        }
+      }
+      return null
     }
 
     function build() {
@@ -66,26 +130,35 @@ export function TextCurtain({ charPool, className, color = '#4a3a28' }: Props) {
       canvas!.height = Math.round(height * dpr)
 
       const colCount = Math.max(1, Math.floor(width / COL_SPACING))
-      const rowCount = Math.max(1, Math.floor(height / ROW_SPACING))
       const xOffset = (width - (colCount - 1) * COL_SPACING) / 2
 
       columns = []
       for (let c = 0; c < colCount; c++) {
-        const chain: Node[] = []
         const colX = xOffset + c * COL_SPACING
+        const topY = contourYAt(colX)
+        // clipped: no roof above this column, no strand hangs here
+        if (topY === null) continue
+
+        // strand starts just under the eave path
+        const startY = topY + 6
+        const available = height - startY
+        if (available < ROW_SPACING * 3) continue
+
         // organic ragged bottom edge per column
         const lengthJitter = 0.72 + rand(c * 7.3) * 0.28
-        const colRows = Math.max(3, Math.floor(rowCount * lengthJitter))
+        const colRows = Math.max(3, Math.floor((available / ROW_SPACING) * lengthJitter))
+
+        const chain: Node[] = []
         for (let r = 0; r < colRows; r++) {
           const seed = c * 131 + r * 17
           const homeX = colX + (rand(seed + 3) - 0.5) * 3
-          const homeY = r * ROW_SPACING + 4
+          const homeY = startY + r * ROW_SPACING
           chain.push({
             // start collapsed at the top so the curtain "drops" in
             x: homeX,
-            y: 4 + r * 1.5,
+            y: startY + r * 1.5,
             px: homeX,
-            py: 4 + r * 1.5,
+            py: startY + r * 1.5,
             homeX,
             homeY,
             char: charPool[Math.floor(rand(seed) * charPool.length)] ?? '文',
@@ -156,7 +229,7 @@ export function TextCurtain({ charPool, className, color = '#4a3a28' }: Props) {
             }
             const diff = (d - ROW_SPACING) / d
             if (r === 1) {
-              // top link pinned to the roof
+              // top link pinned to the roof path
               b.x -= dx * diff
               b.y -= dy * diff
             } else {
@@ -242,10 +315,42 @@ export function TextCurtain({ charPool, className, color = '#4a3a28' }: Props) {
       mouse.y = -9999
     }
 
-    build()
+    /**
+     * Wire the contour image: sample its alpha once loaded, and rebuild
+     * whenever it finishes loading or the layout changes.
+     */
+    function initContour() {
+      if (!contourSelector) {
+        build()
+        return
+      }
+      const img = document.querySelector(contourSelector) as HTMLImageElement | null
+      if (img && img.complete && img.naturalWidth > 0) {
+        sampleContourImage(img)
+        build()
+      } else if (img) {
+        build() // provisional flat build while the roof loads
+        img.addEventListener(
+          'load',
+          () => {
+            sampleContourImage(img)
+            build()
+          },
+          { once: true },
+        )
+      } else {
+        // image not in the DOM yet (mount order) — retry next frame
+        requestAnimationFrame(initContour)
+      }
+    }
+
+    initContour()
     loop()
 
-    const ro = new ResizeObserver(() => build())
+    const ro = new ResizeObserver(() => {
+      if (contourSelector && !contourPixels) return
+      build()
+    })
     ro.observe(canvas)
     // listen on window so strands react even when the cursor is over
     // sibling elements layered above the canvas
@@ -261,7 +366,7 @@ export function TextCurtain({ charPool, className, color = '#4a3a28' }: Props) {
       window.removeEventListener('pointerleave', onPointerLeave)
       document.removeEventListener('mouseleave', onPointerLeave)
     }
-  }, [charPool, color])
+  }, [charPool, color, contourSelector])
 
   return (
     <canvas

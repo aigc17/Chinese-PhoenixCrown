@@ -19,25 +19,31 @@ export function DestinationScene({ destination }: { destination: Destination }) 
         }}
       />
 
-      {/* the hanging text curtain */}
+      {/* the hanging text curtain — spans the roof area so its pins can
+          trace the roof's silhouette path */}
       <div
-        className="pointer-events-auto absolute bottom-[4%] left-1/2 -translate-x-1/2 scene-in"
+        className="pointer-events-auto absolute bottom-[4%] left-1/2 top-[6%] -translate-x-1/2 scene-in"
         style={{
-          top: `calc(14% + 150px - ${destination.roofOverlap}px)`,
-          width: `min(${destination.curtainWidth * 460}px, 74vw)`,
+          width: `min(${destination.curtainWidth * 560}px, 84vw)`,
         }}
       >
-        <TextCurtain charPool={destination.charPool} color="#4a3a28" />
+        <TextCurtain
+          charPool={destination.charPool}
+          color="#4a3a28"
+          contourSelector={`#roof-${destination.id}`}
+        />
       </div>
 
       {/* the roof, layered above the curtain so strands hang from under it */}
       <div className="roof-in absolute left-1/2 top-[6%] w-[300px] -translate-x-1/2 md:w-[420px]">
         <Image
+          id={`roof-${destination.id}`}
           src={destination.roofSrc || '/placeholder.svg'}
           alt={destination.roofAlt}
           width={840}
           height={480}
           priority
+          crossOrigin="anonymous"
           className="h-auto w-full drop-shadow-[0_14px_18px_rgba(74,58,40,0.22)]"
         />
       </div>
