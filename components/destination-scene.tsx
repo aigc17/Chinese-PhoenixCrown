@@ -22,7 +22,7 @@ export function DestinationScene({
           aria-hidden="true"
           className={`absolute left-1/2 top-[8%] h-[50%] -translate-x-1/2 ${sceneIn}`}
           style={{
-            width: 'clamp(440px, 56vw, 900px)',
+            width: 'clamp(520px, 64vw, 1200px)',
             background:
               'radial-gradient(ellipse at center, rgba(96,126,204,0.16) 0%, rgba(58,88,160,0.07) 45%, transparent 72%)',
             filter: 'blur(10px)',
@@ -46,9 +46,10 @@ export function DestinationScene({
           characters have room and don't get clipped at the canvas edge;
           columns without roof above them are still culled by the contour */}
       <div
-        className="pointer-events-auto absolute bottom-[4%] left-1/2 top-[6%] -translate-x-1/2 scene-in"
+        className={`pointer-events-auto absolute bottom-[24%] left-1/2 top-[5%] -translate-x-1/2 ${sceneIn}`}
         style={{
-          width: `min(${destination.curtainWidth * 560 + 360}px, 98vw)`,
+          // track the crown's viewport-relative size, plus swing room
+          width: `min(calc(clamp(320px, 40vw, 780px) * ${destination.curtainWidth} + 40vw), 98vw)`,
         }}
       >
         <TextCurtain
@@ -65,10 +66,12 @@ export function DestinationScene({
       {/* the roof (or crown), layered above the curtain so strands hang from under it;
           the crown is a portrait image so it gets a narrower footprint */}
       <div
-        className={`roof-in absolute left-1/2 top-[6%] -translate-x-1/2 ${
-          dark ? 'w-[210px] md:w-[260px]' : 'w-[300px] md:w-[420px]'
-        }`}
-        style={{ viewTransitionName: `crown-${destination.id}` }}
+        className={`absolute left-1/2 top-[5%] -translate-x-1/2 ${entrance ? 'roof-in' : ''}`}
+        style={{
+          // scale with the viewport so large screens get a large crown
+          width: dark ? 'clamp(320px, 40vw, 780px)' : 'clamp(300px, 34vw, 560px)',
+          viewTransitionName: `crown-${destination.id}`,
+        }}
       >
         <Image
           id={`roof-${destination.id}`}

@@ -28,10 +28,11 @@ export function DestinationCard({
         alt=""
         width={96}
         height={56}
-        style={{ viewTransitionName: `crown-${destination.id}` }}
         className={`h-7 w-12 object-contain opacity-80 transition-opacity group-hover:opacity-100 ${
           dark ? '' : 'mix-blend-multiply'
         }`}
+        // shared element: the thumbnail morphs into the center crown
+        style={{ viewTransitionName: `crown-${destination.id}` }}
       />
       <span className="font-mono text-[9px] tracking-wide text-muted-foreground transition-colors group-hover:text-accent">
         {destination.name}
