@@ -79,6 +79,8 @@ export const destinations: Destination[] = [
     curtainWidth: 0.78,
     roofOverlap: 20,
     theme: 'dark',
-    curtainColors: ['#4f74d8', '#3aa8c9', '#c9a24b', '#e8e2d2', '#4f74d8', '#c9a24b'],
+    // luminous inks matched to the lit crown: kingfisher blue, turquoise,
+    // bright gold, pearl white
+    curtainColors: ['#7d9bf0', '#5cc8e8', '#e8c46a', '#f2ecdc', '#7d9bf0', '#e8c46a'],
   },
 ]

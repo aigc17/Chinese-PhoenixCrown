@@ -25,6 +25,12 @@ type Props = {
    */
   colors?: string[]
   /**
+   * Base ink opacity (0-1). Light paper scenes read well around 0.62;
+   * dark scenes need ~0.95 so the ink sits on the same level as the
+   * brightly-lit artwork.
+   */
+  inkAlpha?: number
+  /**
    * CSS selector for an <img> whose alpha silhouette the curtain
    * should hang from. Each column's pin point follows the image's
    * bottom contour; columns with no image above them are clipped.
@@ -58,6 +64,7 @@ export function TextCurtain({
   className,
   color = '#4a3a28',
   colors,
+  inkAlpha = 0.62,
   contourSelector,
   avoidSelector,
 }: Props) {
@@ -230,7 +237,7 @@ export function TextCurtain({
             homeY,
             char: charPool[(charOffset + r) % charPool.length] ?? '文',
             // uniform ink — every character the same shade
-            alpha: 0.62,
+            alpha: inkAlpha,
             visible: rand(seed + 2) > 0.06,
             color: ink,
           })
@@ -454,7 +461,7 @@ export function TextCurtain({
       window.removeEventListener('pointerleave', onPointerLeave)
       document.removeEventListener('mouseleave', onPointerLeave)
     }
-  }, [charPool, color, colors, contourSelector, avoidSelector])
+  }, [charPool, color, colors, inkAlpha, contourSelector, avoidSelector])
 
   return (
     <canvas
