@@ -10,12 +10,12 @@ export function DestinationScene({ destination }: { destination: Destination }) 
       {/* soft cast shadow angled to the right, like afternoon light */}
       <div
         aria-hidden="true"
-        className="absolute left-1/2 top-[16%] h-[70%] w-[300px] scene-in md:w-[380px]"
+        className="absolute left-1/2 top-[18%] h-[60%] w-[240px] scene-in md:w-[300px]"
         style={{
-          transform: 'translateX(4%) skewX(-14deg)',
+          transform: 'translateX(28%) skewX(-12deg)',
           background:
-            'linear-gradient(100deg, transparent 30%, rgba(74,58,40,0.16) 55%, transparent 92%)',
-          filter: 'blur(18px)',
+            'linear-gradient(100deg, transparent 38%, rgba(74,58,40,0.08) 58%, transparent 86%)',
+          filter: 'blur(26px)',
         }}
       />
 
@@ -38,7 +38,7 @@ export function DestinationScene({ destination }: { destination: Destination }) 
           width={840}
           height={480}
           priority
-          className="h-auto w-full mix-blend-multiply"
+          className="h-auto w-full drop-shadow-[0_14px_18px_rgba(74,58,40,0.22)]"
         />
       </div>
 
