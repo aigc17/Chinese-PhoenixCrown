@@ -19,12 +19,13 @@ export function DestinationScene({ destination }: { destination: Destination }) 
         }}
       />
 
-      {/* the hanging text curtain — spans the roof area so its pins can
-          trace the roof's silhouette path */}
+      {/* the hanging text curtain — wider than the roof so swinging
+          characters have room and don't get clipped at the canvas edge;
+          columns without roof above them are still culled by the contour */}
       <div
         className="pointer-events-auto absolute bottom-[4%] left-1/2 top-[6%] -translate-x-1/2 scene-in"
         style={{
-          width: `min(${destination.curtainWidth * 560}px, 84vw)`,
+          width: `min(${destination.curtainWidth * 560 + 360}px, 98vw)`,
         }}
       >
         <TextCurtain
