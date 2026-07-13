@@ -12,6 +12,10 @@ export type Destination = {
   /** curtain width relative to roof width */
   curtainWidth: number
   roofOverlap: number
+  /** dark scenes flip the page palette and glow instead of shadow */
+  theme?: 'light' | 'dark'
+  /** ink palette for the curtain; single-entry = uniform color */
+  curtainColors?: string[]
 }
 
 export const destinations: Destination[] = [
@@ -59,5 +63,22 @@ export const destinations: Destination[] = [
       'аәбвгғдеёжзийкқлмнңоөпрстуұүфхһцчшщыіэюяАӘБГҒДЕЖЗИЙКҚЛМНҢОӨПРСТУҰҮФХЦЧШЫІдалажелкүнтаужұлдызкиізүйшаңырақжолотбасыдәстүркөшбатыр',
     curtainWidth: 0.7,
     roofOverlap: 18,
+  },
+  {
+    id: 'fengguan',
+    name: 'Fengguan',
+    headingRest: 'kingfisher blue, gold filigree, and pearls that remember dynasties',
+    phrase: '凤冠霞帔 (Fèngguān xiápèi)',
+    phraseNote: 'The phoenix crown',
+    caption:
+      'Beneath point-cui feathers and strands of pearl, every blue petal was once a promise.',
+    roofSrc: '/images/crown-fengguan.png',
+    roofAlt: 'Ming-style phoenix crown with kingfisher-blue enamel flowers, gold filigree and pearl tassels',
+    charPool:
+      '凤冠霞帔金翠蓝宝珠玉花翎点翠流苏珍珠簪钗凰羽鸾鸟朝云锦绣华章璎珞垂珠銮殿宫灯烛影红妆嫁衣良辰吉时凤舞龙翔祥云瑞气琉璃翡翠玛瑙琥珀鎏金錾花累丝嵌宝步摇金钿花钿眉黛胭脂绮罗绫缎凤求凰比翼连理同心百年好合天作之合',
+    curtainWidth: 0.78,
+    roofOverlap: 20,
+    theme: 'dark',
+    curtainColors: ['#4f74d8', '#3aa8c9', '#c9a24b', '#e8e2d2', '#4f74d8', '#c9a24b'],
   },
 ]

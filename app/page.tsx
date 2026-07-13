@@ -11,9 +11,14 @@ export default function Home() {
 
   const prev = (index - 1 + destinations.length) % destinations.length
   const next = (index + 1) % destinations.length
+  const dark = destinations[index].theme === 'dark'
 
   return (
-    <main className="paper-grain relative h-dvh overflow-hidden bg-background">
+    <main
+      className={`paper-grain relative h-dvh overflow-hidden bg-background transition-colors duration-700 ${
+        dark ? 'dark' : ''
+      }`}
+    >
       <SiteHeader />
 
       <DestinationScene destination={destinations[index]} />
@@ -22,11 +27,13 @@ export default function Home() {
         destination={destinations[prev]}
         side="left"
         onSelect={() => setIndex(prev)}
+        dark={dark}
       />
       <DestinationCard
         destination={destinations[next]}
         side="right"
         onSelect={() => setIndex(next)}
+        dark={dark}
       />
     </main>
   )

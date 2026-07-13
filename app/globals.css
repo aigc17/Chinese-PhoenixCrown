@@ -47,6 +47,27 @@
   --radius: 0.25rem;
 }
 
+.dark {
+  color-scheme: dark;
+  /* midnight lacquer blue-black, for the phoenix crown scene */
+  --background: oklch(0.17 0.025 265);
+  --foreground: oklch(0.88 0.03 85);
+  --card: oklch(0.21 0.03 265);
+  --card-foreground: oklch(0.88 0.03 85);
+  --primary: oklch(0.75 0.1 85);
+  --primary-foreground: oklch(0.17 0.025 265);
+  --secondary: oklch(0.25 0.03 265);
+  --secondary-foreground: oklch(0.88 0.03 85);
+  --muted: oklch(0.25 0.03 265);
+  --muted-foreground: oklch(0.66 0.04 262);
+  --accent: oklch(0.75 0.1 85);
+  --accent-foreground: oklch(0.17 0.025 265);
+  --destructive: oklch(0.55 0.18 28);
+  --border: oklch(0.6 0.06 262 / 35%);
+  --input: oklch(0.6 0.06 262 / 35%);
+  --ring: oklch(0.75 0.1 85);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

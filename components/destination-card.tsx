@@ -7,10 +7,12 @@ export function DestinationCard({
   destination,
   side,
   onSelect,
+  dark = false,
 }: {
   destination: Destination
   side: 'left' | 'right'
   onSelect: () => void
+  dark?: boolean
 }) {
   return (
     <button
@@ -26,7 +28,9 @@ export function DestinationCard({
         alt=""
         width={96}
         height={56}
-        className="h-7 w-12 object-contain opacity-80 mix-blend-multiply transition-opacity group-hover:opacity-100"
+        className={`h-7 w-12 object-contain opacity-80 transition-opacity group-hover:opacity-100 ${
+          dark ? '' : 'mix-blend-multiply'
+        }`}
       />
       <span className="font-mono text-[9px] tracking-wide text-muted-foreground transition-colors group-hover:text-accent">
         {destination.name}

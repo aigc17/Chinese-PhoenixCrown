@@ -12,12 +12,18 @@ type Node = {
   char: string
   alpha: number
   visible: boolean
+  color: string
 }
 
 type Props = {
   charPool: string
   className?: string
   color?: string
+  /**
+   * Multi-color ink palette. When provided, strands are painted in
+   * short vertical runs drawn from these colors (overrides `color`).
+   */
+  colors?: string[]
   /**
    * CSS selector for an <img> whose alpha silhouette the curtain
    * should hang from. Each column's pin point follows the image's
@@ -51,6 +57,7 @@ export function TextCurtain({
   charPool,
   className,
   color = '#4a3a28',
+  colors,
   contourSelector,
   avoidSelector,
 }: Props) {
@@ -205,6 +212,14 @@ export function TextCurtain({
           const seed = c * 131 + r * 17
           const homeX = colX + (rand(seed + 3) - 0.5) * 1.6
           const homeY = startY + r * ROW_SPACING
+
+          // palette mode paints strands in short vertical runs (~6 chars)
+          // so colors read as woven threads, not random noise
+          const ink =
+            colors && colors.length > 0
+              ? colors[Math.floor(rand(c * 13.7 + Math.floor(r / 6) * 5.1) * colors.length)]
+              : color
+
           chain.push({
             // start collapsed at the top so the curtain "drops" in
             x: homeX,
@@ -217,6 +232,7 @@ export function TextCurtain({
             // uniform ink — every character the same shade
             alpha: 0.62,
             visible: rand(seed + 2) > 0.06,
+            color: ink,
           })
         }
         columns.push(chain)
@@ -340,11 +356,11 @@ export function TextCurtain({
             ctx!.save()
             ctx!.translate(n.x, n.y)
             ctx!.rotate(angle)
-            ctx!.fillStyle = color
+            ctx!.fillStyle = n.color
             ctx!.fillText(n.char, 0, 0)
             ctx!.restore()
           } else {
-            ctx!.fillStyle = color
+            ctx!.fillStyle = n.color
             ctx!.fillText(n.char, n.x, n.y)
           }
         }
@@ -438,7 +454,7 @@ export function TextCurtain({
       window.removeEventListener('pointerleave', onPointerLeave)
       document.removeEventListener('mouseleave', onPointerLeave)
     }
-  }, [charPool, color, contourSelector, avoidSelector])
+  }, [charPool, color, colors, contourSelector, avoidSelector])
 
   return (
     <canvas
