@@ -98,6 +98,56 @@ export function TextCurtain({
     let contourW = 0
     let contourH = 0
 
+    // --- glyph atlas -------------------------------------------------
+    // fillText for thousands of glyphs per frame is the bottleneck, so
+    // every unique char+color pair is rasterized once into an offscreen
+    // atlas and stamped with drawImage each frame instead.
+    let atlas: HTMLCanvasElement | null = null
+    let atlasMap = new Map<string, { sx: number; sy: number }>()
+    const ATLAS_PAD = 3
+    let atlasCell = 0 // device-pixel cell pitch
+    let atlasCellCss = 0 // css-pixel draw size
+
+    function buildAtlas() {
+      const inks = colors && colors.length > 0 ? Array.from(new Set(colors)) : [color]
+      const chars = Array.from(new Set(charPool.split('')))
+      const scale = dpr
+      atlasCellCss = FONT_SIZE + ATLAS_PAD * 2
+      // exact float pitch so source rects line up with the scaled grid
+      atlasCell = atlasCellCss * scale
+
+      const total = chars.length * inks.length
+      const cols = Math.ceil(Math.sqrt(total))
+      const rows = Math.ceil(total / cols)
+
+      atlas = document.createElement('canvas')
+      atlas.width = Math.ceil(cols * atlasCell)
+      atlas.height = Math.ceil(rows * atlasCell)
+      const actx = atlas.getContext('2d')
+      if (!actx) {
+        atlas = null
+        return
+      }
+      actx.scale(scale, scale)
+      actx.font = `${luminous ? 500 : 300} ${FONT_SIZE}px 'Songti SC', 'Noto Serif SC', serif`
+      actx.textAlign = 'center'
+      actx.textBaseline = 'middle'
+
+      atlasMap = new Map()
+      let i = 0
+      for (const ink of inks) {
+        actx.fillStyle = ink
+        for (const ch of chars) {
+          const cx = (i % cols) * atlasCellCss
+          const cy = Math.floor(i / cols) * atlasCellCss
+          actx.fillText(ch, cx + atlasCellCss / 2, cy + atlasCellCss / 2)
+          atlasMap.set(`${ch}|${ink}`, { sx: cx * scale, sy: cy * scale })
+          i++
+        }
+      }
+    }
+    // -----------------------------------------------------------------
+
     // the curtain stays invisible until the roof image has loaded and
     // its contour is sampled, then fades in after the roof drops
     let reveal = 0
@@ -196,6 +246,7 @@ export function TextCurtain({
       canvas!.width = Math.round(width * dpr)
       canvas!.height = Math.round(height * dpr)
 
+      buildAtlas()
       sampleAvoidRects()
 
       const colCount = Math.max(1, Math.floor(width / COL_SPACING))
@@ -337,14 +388,10 @@ export function TextCurtain({
     function draw() {
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx!.clearRect(0, 0, width, height)
-      if (reveal <= 0) return
-      // luminous scenes use a heavier stroke so thin glyphs don't get
-      // swallowed by the dark background's antialiasing. The glow itself
-      // is a GPU CSS drop-shadow on the canvas element — canvas shadowBlur
-      // is per-glyph software blur and destroys frame rate.
-      ctx!.font = `${luminous ? 500 : 300} ${FONT_SIZE}px 'Songti SC', 'Noto Serif SC', serif`
-      ctx!.textAlign = 'center'
-      ctx!.textBaseline = 'middle'
+      if (reveal <= 0 || !atlas) return
+
+      const half = atlasCellCss / 2
+      const hasAvoid = avoidRects.length > 0
 
       for (let c = 0; c < columns.length; c++) {
         const chain = columns[c]
@@ -357,7 +404,11 @@ export function TextCurtain({
           let edgeFade = tail > 0.75 ? 1 - (tail - 0.75) / 0.25 : 1
 
           // fade behind overlapping copy, and during the drop-in reveal
-          edgeFade *= avoidFadeAt(n.x, n.y) * reveal
+          if (hasAvoid) edgeFade *= avoidFadeAt(n.x, n.y)
+          edgeFade *= reveal
+
+          const cell = atlasMap.get(`${n.char}|${n.color}`)
+          if (!cell) continue
 
           // characters align to the strand's actual tangent so a swept
           // strand reads like a curved ribbon of text
@@ -370,17 +421,15 @@ export function TextCurtain({
           }
 
           ctx!.globalAlpha = n.alpha * edgeFade
-          ctx!.fillStyle = n.color
-          // rotate only when visibly bent — setTransform is cheaper
-          // than save/translate/rotate/restore per glyph
+          // stamp the pre-rasterized glyph — far cheaper than fillText
           if (angle > 0.03 || angle < -0.03) {
             const cos = Math.cos(angle)
             const sin = Math.sin(angle)
             ctx!.setTransform(dpr * cos, dpr * sin, -dpr * sin, dpr * cos, dpr * n.x, dpr * n.y)
-            ctx!.fillText(n.char, 0, 0)
+            ctx!.drawImage(atlas, cell.sx, cell.sy, atlasCell, atlasCell, -half, -half, atlasCellCss, atlasCellCss)
             ctx!.setTransform(dpr, 0, 0, dpr, 0, 0)
           } else {
-            ctx!.fillText(n.char, n.x, n.y)
+            ctx!.drawImage(atlas, cell.sx, cell.sy, atlasCell, atlasCell, n.x - half, n.y - half, atlasCellCss, atlasCellCss)
           }
         }
       }

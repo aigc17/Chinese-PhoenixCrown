@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import type { Destination } from '@/lib/destinations'
 import { TextCurtain } from '@/components/text-curtain'
+import { withViewTransition } from '@/lib/view-transition'
 
 /**
  * Gallery tab: three crowns on the same dark wall like the reference
@@ -30,7 +31,7 @@ export function GalleryView({
         <GalleryItem
           destination={destinations[prev]}
           size="side"
-          onSelect={() => setFocus(prev)}
+          onSelect={() => withViewTransition(() => setFocus(prev))}
         />
         <GalleryItem
           destination={destinations[focus]}
@@ -40,7 +41,7 @@ export function GalleryView({
         <GalleryItem
           destination={destinations[next]}
           size="side"
-          onSelect={() => setFocus(next)}
+          onSelect={() => withViewTransition(() => setFocus(next))}
         />
       </div>
     </div>
@@ -91,6 +92,7 @@ function GalleryItem({
         className={`group absolute left-1/2 top-[4%] -translate-x-1/2 cursor-pointer border-0 bg-transparent p-0 ${
           isCenter ? 'w-[240px] md:w-[300px]' : 'w-[140px] md:w-[170px] opacity-70 hover:opacity-100'
         }`}
+        style={{ viewTransitionName: `crown-${destination.id}` }}
       >
         <Image
           id={`gallery-roof-${destination.id}-${size}`}
