@@ -214,8 +214,8 @@ export function TextCurtain({
             homeX,
             homeY,
             char: charPool[(charOffset + r) % charPool.length] ?? '文',
-            // thin, even ink — subtle variation only
-            alpha: 0.5 + rand(seed + 1) * 0.22,
+            // uniform ink — every character the same shade
+            alpha: 0.62,
             visible: rand(seed + 2) > 0.06,
           })
         }
@@ -328,20 +328,14 @@ export function TextCurtain({
           // characters align to the strand's actual tangent so a swept
           // strand reads like a curved ribbon of text
           let angle = 0
-          let bend = 0
           if (r > 0) {
             const p = chain[r - 1]
             const sdx = n.x - p.x
             const sdy = n.y - p.y
             angle = Math.atan2(sdx, Math.max(sdy, 0.001)) * -1
-            // how far the strand is from hanging straight (0..1)
-            bend = Math.min(1, Math.abs(sdx) / ROW_SPACING)
           }
 
-          // bunched, curving strands darken like gathered ink
-          const inkGain = 1 + bend * 0.7
-
-          ctx!.globalAlpha = Math.min(1, n.alpha * inkGain) * edgeFade
+          ctx!.globalAlpha = n.alpha * edgeFade
           if (angle !== 0) {
             ctx!.save()
             ctx!.translate(n.x, n.y)
