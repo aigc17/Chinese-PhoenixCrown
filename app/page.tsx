@@ -15,8 +15,8 @@ export default function Home() {
 
   const prev = (index - 1 + destinations.length) % destinations.length
   const next = (index + 1) % destinations.length
-  // gallery always sits on light paper; only the scene view goes dark
-  const dark = view === 'scene' && destinations[index].theme === 'dark'
+  // every remaining destination is a dark crown scene
+  const dark = true
 
   return (
     <main
@@ -80,6 +80,7 @@ export default function Home() {
       ) : (
         <GalleryView
           destinations={destinations}
+          initialIndex={index}
           onSelect={(i) => {
             setIndex(i)
             setView('scene')

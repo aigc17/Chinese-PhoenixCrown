@@ -20,51 +20,6 @@ export type Destination = {
 
 export const destinations: Destination[] = [
   {
-    id: 'china',
-    name: 'China',
-    headingRest: 'golden courtyards, silk-road myths, roofs that refuse gravity',
-    phrase: '缘分 (Yuánfèn)',
-    phraseNote: 'A destined meeting',
-    caption:
-      'Wander forbidden gardens, painted eaves, and storms older than the maps that tried to hold them.',
-    roofSrc: '/images/roof-china.png',
-    roofAlt: 'Traditional Chinese imperial double-tiered roof with golden tiles',
-    charPool:
-      '天地玄黄宇宙洪荒日月盈昃辰宿列张寒来暑往秋收冬藏闰余成岁律吕调阳云腾致雨露结为霜金生丽水玉出昆冈剑号巨阙珠称夜光果珍李柰菜重芥姜海咸河淡鳞潜羽翔龙师火帝鸟官人皇始制文字乃服衣裳推位让国有虞陶唐吊民伐罪周发殷汤坐朝问道垂拱平章爱育黎首臣伏戎羌遐迩一体率宾归王鸣凤在竹白驹食场化被草木赖及万方',
-    curtainWidth: 0.72,
-    roofOverlap: 26,
-  },
-  {
-    id: 'japan',
-    name: 'Japan',
-    headingRest: 'red eaves in the mist, stone paths, and patience as architecture',
-    phrase: '一期一会 (Ichigo ichie)',
-    phraseNote: 'One time, one meeting',
-    caption:
-      'Pass under vermilion gates, cedar shade, and rooms where silence is part of the design.',
-    roofSrc: '/images/roof-japan.png',
-    roofAlt: 'Traditional Japanese temple roof in deep vermilion red',
-    charPool:
-      'いろはにほへとちりぬるをわかよたれそつねならむうゐのおくやまけふこえてあさきゆめみしゑひもせす山川草木風花雪月静寂道庭寺門石苔水音光影朝夕春夏秋冬桜紅葉雨霧雲空海波松竹梅鳥虫声夢幻侘寂間縁側障子畳茶湯香灯籠鐘',
-    curtainWidth: 0.68,
-    roofOverlap: 22,
-  },
-  {
-    id: 'kazakhstan',
-    name: 'Kazakhstan',
-    headingRest: 'steppe wind, shanyrak light, and a home that moves with you',
-    phrase: 'Жол (Jol)',
-    phraseNote: 'The open road',
-    caption:
-      'Cross grass without edge, warm felt interiors, and patterns that outrun every border.',
-    roofSrc: '/images/roof-kazakh.png',
-    roofAlt: 'Traditional Kazakh yurt dome with shanyrak crown',
-    charPool:
-      'аәбвгғдеёжзийкқлмнңоөпрстуұүфхһцчшщыіэюяАӘБГҒДЕЖЗИЙКҚЛМНҢОӨПРСТУҰҮФХЦЧШЫІдалажелкүнтаужұлдызкиізүйшаңырақжолотбасыдәстүркөшбатыр',
-    curtainWidth: 0.7,
-    roofOverlap: 18,
-  },
-  {
     id: 'fengguan',
     name: 'Fengguan',
     headingRest: 'kingfisher blue, gold filigree, and pearls that remember dynasties',
@@ -113,7 +68,7 @@ export const destinations: Destination[] = [
     roofSrc: '/images/crown-jade.png',
     roofAlt: 'Jade-green phoenix crown with peacock feather motifs, jade beads, pearls and long gold tassels',
     charPool:
-      '翠羽明珰孔雀开屏碧玉玲珑翡翠琉璃春水初生绿云扰扰青鸾起舞玉露金风兰叶葳蕤桂华秋皎池塘生春草园柳变鸣禽曲径通幽处禅房花木深绿竹入幽径青萝拂行衣蕉叶覆鹿松风煮茗竹雨谈诗兰亭修禊曲���流觞茂林修竹清流激湍映带左右天朗气清惠风和畅仰观宇宙俯察品类',
+      '翠羽明珰孔雀开屏碧玉玲珑翡翠琉璃春水初生绿云扰扰青鸾起舞玉露金风兰叶葳蕤桂华秋皎池塘生春草园柳变鸣禽曲径通幽处禅房花木深绿竹入幽径青萝拂行衣蕉叶覆鹿松风煮茗竹雨谈诗兰亭修禊曲水流觞茂林修竹清流激湍映带左右天朗气清惠风和畅仰观宇宙俯察品类',
     curtainWidth: 0.8,
     roofOverlap: 20,
     theme: 'dark',
@@ -131,7 +86,7 @@ export const destinations: Destination[] = [
     roofSrc: '/images/crown-ice.png',
     roofAlt: 'Ice-blue and silver phoenix crown with frost-petal wings, sapphires and pale pearl chains',
     charPool:
-      '冰肌玉骨月明千里琼楼玉宇高处不胜寒起舞弄清影何似在人间银装素裹千树万树梨花开忽如一夜春风来北风卷地白草折胡天八月即飞雪瀚海阑干百丈冰愁云惨淡万里凝寒光照铁衣朔气传金柝雪拥��关马不前云横秦岭家何在梅须逊雪三分白雪却输梅一段香日暮苍山远天寒白屋贫柴门闻犬吠风雪夜归人',
+      '冰肌玉骨月明千里琼楼玉宇高处不胜寒起舞弄清影何似在人间银装素裹千树万树梨花开忽如一夜春风来北风卷地白草折胡天八月即飞雪瀚海阑干百丈冰愁云惨淡万里凝寒光照铁衣朔气传金柝雪拥蓝关马不前云横秦岭家何在梅须逊雪三分白雪却输梅一段香日暮苍山远天寒白屋贫柴门闻犬吠风雪夜归人',
     curtainWidth: 0.8,
     roofOverlap: 20,
     theme: 'dark',
