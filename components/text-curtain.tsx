@@ -338,13 +338,12 @@ export function TextCurtain({
       ctx!.clearRect(0, 0, width, height)
       if (reveal <= 0) return
       // luminous scenes use a heavier stroke so thin glyphs don't get
-      // swallowed by the dark background's antialiasing
+      // swallowed by the dark background's antialiasing. The glow itself
+      // is a GPU CSS drop-shadow on the canvas element — canvas shadowBlur
+      // is per-glyph software blur and destroys frame rate.
       ctx!.font = `${luminous ? 500 : 300} ${FONT_SIZE}px 'Songti SC', 'Noto Serif SC', serif`
       ctx!.textAlign = 'center'
       ctx!.textBaseline = 'middle'
-      if (luminous) {
-        ctx!.shadowBlur = 6
-      }
 
       for (let c = 0; c < columns.length; c++) {
         const chain = columns[c]
@@ -370,25 +369,21 @@ export function TextCurtain({
           }
 
           ctx!.globalAlpha = n.alpha * edgeFade
-          if (luminous) ctx!.shadowColor = n.color
-          if (angle !== 0) {
-            ctx!.save()
-            ctx!.translate(n.x, n.y)
-            ctx!.rotate(angle)
-            ctx!.fillStyle = n.color
+          ctx!.fillStyle = n.color
+          // rotate only when visibly bent — setTransform is cheaper
+          // than save/translate/rotate/restore per glyph
+          if (angle > 0.03 || angle < -0.03) {
+            const cos = Math.cos(angle)
+            const sin = Math.sin(angle)
+            ctx!.setTransform(dpr * cos, dpr * sin, -dpr * sin, dpr * cos, dpr * n.x, dpr * n.y)
             ctx!.fillText(n.char, 0, 0)
-            ctx!.restore()
+            ctx!.setTransform(dpr, 0, 0, dpr, 0, 0)
           } else {
-            ctx!.fillStyle = n.color
             ctx!.fillText(n.char, n.x, n.y)
           }
         }
       }
       ctx!.globalAlpha = 1
-      if (luminous) {
-        ctx!.shadowBlur = 0
-        ctx!.shadowColor = 'transparent'
-      }
     }
 
     function loop() {
@@ -484,7 +479,13 @@ export function TextCurtain({
       ref={canvasRef}
       className={className}
       aria-hidden="true"
-      style={{ width: '100%', height: '100%' }}
+      style={{
+        width: '100%',
+        height: '100%',
+        // one GPU-composited glow for the whole curtain instead of
+        // per-glyph canvas shadows
+        filter: luminous ? 'drop-shadow(0 0 5px rgba(140, 170, 255, 0.55))' : undefined,
+      }}
     />
   )
 }
