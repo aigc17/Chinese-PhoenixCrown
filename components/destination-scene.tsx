@@ -47,7 +47,8 @@ export function DestinationScene({ destination }: { destination: Destination }) 
           charPool={destination.charPool}
           color="#4a3a28"
           colors={destination.curtainColors}
-          inkAlpha={dark ? 0.95 : 0.62}
+          inkAlpha={dark ? 1 : 0.62}
+          luminous={dark}
           contourSelector={`#roof-${destination.id}`}
           avoidSelector="[data-curtain-avoid]"
         />

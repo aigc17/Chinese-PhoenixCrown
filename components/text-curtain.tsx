@@ -31,6 +31,11 @@ type Props = {
    */
   inkAlpha?: number
   /**
+   * Dark-scene mode: heavier stroke weight plus a soft same-color glow
+   * so thin glyphs read as lit jewelry instead of dim ink.
+   */
+  luminous?: boolean
+  /**
    * CSS selector for an <img> whose alpha silhouette the curtain
    * should hang from. Each column's pin point follows the image's
    * bottom contour; columns with no image above them are clipped.
@@ -65,6 +70,7 @@ export function TextCurtain({
   color = '#4a3a28',
   colors,
   inkAlpha = 0.62,
+  luminous = false,
   contourSelector,
   avoidSelector,
 }: Props) {
@@ -331,9 +337,14 @@ export function TextCurtain({
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx!.clearRect(0, 0, width, height)
       if (reveal <= 0) return
-      ctx!.font = `300 ${FONT_SIZE}px 'Songti SC', 'Noto Serif SC', serif`
+      // luminous scenes use a heavier stroke so thin glyphs don't get
+      // swallowed by the dark background's antialiasing
+      ctx!.font = `${luminous ? 500 : 300} ${FONT_SIZE}px 'Songti SC', 'Noto Serif SC', serif`
       ctx!.textAlign = 'center'
       ctx!.textBaseline = 'middle'
+      if (luminous) {
+        ctx!.shadowBlur = 6
+      }
 
       for (let c = 0; c < columns.length; c++) {
         const chain = columns[c]
@@ -359,6 +370,7 @@ export function TextCurtain({
           }
 
           ctx!.globalAlpha = n.alpha * edgeFade
+          if (luminous) ctx!.shadowColor = n.color
           if (angle !== 0) {
             ctx!.save()
             ctx!.translate(n.x, n.y)
@@ -373,6 +385,10 @@ export function TextCurtain({
         }
       }
       ctx!.globalAlpha = 1
+      if (luminous) {
+        ctx!.shadowBlur = 0
+        ctx!.shadowColor = 'transparent'
+      }
     }
 
     function loop() {
@@ -461,7 +477,7 @@ export function TextCurtain({
       window.removeEventListener('pointerleave', onPointerLeave)
       document.removeEventListener('mouseleave', onPointerLeave)
     }
-  }, [charPool, color, colors, inkAlpha, contourSelector, avoidSelector])
+  }, [charPool, color, colors, inkAlpha, luminous, contourSelector, avoidSelector])
 
   return (
     <canvas
