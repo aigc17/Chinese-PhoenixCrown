@@ -479,13 +479,7 @@ export function TextCurtain({
       ref={canvasRef}
       className={className}
       aria-hidden="true"
-      style={{
-        width: '100%',
-        height: '100%',
-        // one GPU-composited glow for the whole curtain instead of
-        // per-glyph canvas shadows
-        filter: luminous ? 'drop-shadow(0 0 5px rgba(140, 170, 255, 0.55))' : undefined,
-      }}
+      style={{ width: '100%', height: '100%' }}
     />
   )
 }
