@@ -24,41 +24,7 @@ export default function Home() {
         dark ? 'dark' : ''
       }`}
     >
-      <SiteHeader />
-
-      {/* view tabs */}
-      <div
-        role="tablist"
-        aria-label="View"
-        className="absolute left-1/2 top-5 z-40 flex -translate-x-1/2 border border-border bg-card/70 backdrop-blur-[1px]"
-      >
-        <button
-          type="button"
-          role="tab"
-          aria-selected={view === 'scene'}
-          onClick={() => setView('scene')}
-          className={`px-4 py-1.5 font-mono text-xs transition-colors ${
-            view === 'scene'
-              ? 'bg-primary text-primary-foreground'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          Scene
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={view === 'gallery'}
-          onClick={() => setView('gallery')}
-          className={`px-4 py-1.5 font-mono text-xs transition-colors ${
-            view === 'gallery'
-              ? 'bg-primary text-primary-foreground'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          Gallery
-        </button>
-      </div>
+      <SiteHeader view={view} onViewChange={setView} />
 
       {view === 'scene' ? (
         <>
