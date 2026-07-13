@@ -102,4 +102,58 @@ export const destinations: Destination[] = [
     // ruby bead, sapphire, pearl white
     curtainColors: ['#4fc3e8', '#e8c46a', '#d4525a', '#6b8de0', '#f2ecdc', '#4fc3e8'],
   },
+  {
+    id: 'cuiyu',
+    name: 'Cuiyu',
+    headingRest: 'peacock plumes, jade dew, and gardens folded into gold',
+    phrase: '翠羽明珰 (Cuìyǔ míngdāng)',
+    phraseNote: 'Halcyon plumes, bright pendants',
+    caption:
+      'Peacock feathers curl around jade blossoms, and every pearl tassel drips with spring.',
+    roofSrc: '/images/crown-jade.png',
+    roofAlt: 'Jade-green phoenix crown with peacock feather motifs, jade beads, pearls and long gold tassels',
+    charPool:
+      '翠羽明珰孔雀开屏碧玉玲珑翡翠琉璃春水初生绿云扰扰青鸾起舞玉露金风兰叶葳蕤桂华秋皎池塘生春草园柳变鸣禽曲径通幽处禅房花木深绿竹入幽径青萝拂行衣蕉叶覆鹿松风煮茗竹雨谈诗兰亭修禊曲水流觞茂林修竹清流激湍映带左右天朗气清惠风和畅仰观宇宙俯察品类',
+    curtainWidth: 0.8,
+    roofOverlap: 20,
+    theme: 'dark',
+    // inks from the jade crown: peacock green, spring jade, gold, pearl
+    curtainColors: ['#5ed49a', '#8fd6b0', '#e8c46a', '#f2ecdc', '#3fb8c9', '#5ed49a'],
+  },
+  {
+    id: 'bingluan',
+    name: 'Bingluan',
+    headingRest: 'moonlit silver, frost petals, and sapphires cut from winter sky',
+    phrase: '冰肌玉骨 (Bīngjī yùgǔ)',
+    phraseNote: 'Skin of ice, bones of jade',
+    caption:
+      'Silver wings unfold like frost on glass, and sapphire hearts keep the cold light of the moon.',
+    roofSrc: '/images/crown-ice.png',
+    roofAlt: 'Ice-blue and silver phoenix crown with frost-petal wings, sapphires and pale pearl chains',
+    charPool:
+      '冰肌玉骨月明千里琼楼玉宇高处不胜寒起舞弄清影何似在人间银装素裹千树万树梨花开忽如一夜春风来北风卷地白草折胡天八月即飞雪瀚海阑干百丈冰愁云惨淡万里凝寒光照铁衣朔气传金柝雪拥蓝关马不前云横秦岭家何在梅须逊雪三分白雪却输梅一段香日暮苍山远天寒白屋贫柴门闻犬吠风雪夜归人',
+    curtainWidth: 0.8,
+    roofOverlap: 20,
+    theme: 'dark',
+    // inks from the ice crown: glacier blue, silver white, sapphire, pearl
+    curtainColors: ['#9cc4f0', '#e4ecf7', '#4a6fd8', '#f2f0ea', '#b8d4f0', '#9cc4f0'],
+  },
+  {
+    id: 'jinluan',
+    name: 'Jinluan',
+    headingRest: 'lacquer night, twin dragons, and phoenixes forged in imperial gold',
+    phrase: '金銮夜宴 (Jīnluán yèyàn)',
+    phraseNote: 'Night feast at the golden throne',
+    caption:
+      'Dragons coil through black lacquer peonies while gold phoenixes guard pearls the size of moons.',
+    roofSrc: '/images/crown-gold.png',
+    roofAlt: 'Black and gold imperial crown with twin dragons, gold phoenixes, black lacquer flowers and large pearls',
+    charPool:
+      '金銮夜宴龙腾凤翥九重宫阙紫气东来鎏金错彩黑漆描金牡丹缠枝双龙戏珠丹凤朝阳华灯初上钟鸣鼎食玉楼金殿琼浆玉液夜光杯葡萄美酒琥珀光将进酒杯莫停天生我材必有用千金散尽还复来烹羊宰牛且为乐会须一饮三百杯钟鼓馔玉不足贵但愿长醉不复醒古来圣贤皆寂寞惟有饮者留其名',
+    curtainWidth: 0.82,
+    roofOverlap: 20,
+    theme: 'dark',
+    // inks from the gold crown: imperial gold, warm brass, pearl cream
+    curtainColors: ['#e8b84b', '#f2ecdc', '#c9973a', '#f7e9c4', '#e8b84b', '#d8c8a0'],
+  },
 ]
