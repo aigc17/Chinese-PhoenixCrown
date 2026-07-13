@@ -60,6 +60,7 @@ export function DestinationScene({ destination }: { destination: Destination }) 
         className={`roof-in absolute left-1/2 top-[6%] -translate-x-1/2 ${
           dark ? 'w-[210px] md:w-[260px]' : 'w-[300px] md:w-[420px]'
         }`}
+        style={{ viewTransitionName: `crown-${destination.id}` }}
       >
         <Image
           id={`roof-${destination.id}`}

@@ -98,6 +98,56 @@ export function TextCurtain({
     let contourW = 0
     let contourH = 0
 
+    // --- glyph atlas -------------------------------------------------
+    // fillText for thousands of glyphs per frame is the bottleneck, so
+    // every unique char+color pair is rasterized once into an offscreen
+    // atlas and stamped with drawImage each frame instead.
+    let atlas: HTMLCanvasElement | null = null
+    let atlasMap = new Map<string, { sx: number; sy: number }>()
+    const ATLAS_PAD = 3
+    let atlasCell = 0 // device-pixel cell pitch
+    let atlasCellCss = 0 // css-pixel draw size
+
+    function buildAtlas() {
+      const inks = colors && colors.length > 0 ? Array.from(new Set(colors)) : [color]
+      const chars = Array.from(new Set(charPool.split('')))
+      const scale = dpr
+      atlasCellCss = FONT_SIZE + ATLAS_PAD * 2
+      // exact float pitch so source rects line up with the scaled grid
+      atlasCell = atlasCellCss * scale
+
+      const total = chars.length * inks.length
+      const cols = Math.ceil(Math.sqrt(total))
+      const rows = Math.ceil(total / cols)
+
+      atlas = document.createElement('canvas')
+      atlas.width = Math.ceil(cols * atlasCell)
+      atlas.height = Math.ceil(rows * atlasCell)
+      const actx = atlas.getContext('2d')
+      if (!actx) {
+        atlas = null
+        return
+      }
+      actx.scale(scale, scale)
+      actx.font = `${luminous ? 500 : 300} ${FONT_SIZE}px 'Songti SC', 'Noto Serif SC', serif`
+      actx.textAlign = 'center'
+      actx.textBaseline = 'middle'
+
+      atlasMap = new Map()
+      let i = 0
+      for (const ink of inks) {
+        actx.fillStyle = ink
+        for (const ch of chars) {
+          const cx = (i % cols) * atlasCellCss
+          const cy = Math.floor(i / cols) * atlasCellCss
+          actx.fillText(ch, cx + atlasCellCss / 2, cy + atlasCellCss / 2)
+          atlasMap.set(`${ch}|${ink}`, { sx: cx * scale, sy: cy * scale })
+          i++
+        }
+      }
+    }
+    // -----------------------------------------------------------------
+
     // the curtain stays invisible until the roof image has loaded and
     // its contour is sampled, then fades in after the roof drops
     let reveal = 0
@@ -196,6 +246,7 @@ export function TextCurtain({
       canvas!.width = Math.round(width * dpr)
       canvas!.height = Math.round(height * dpr)
 
+      buildAtlas()
       sampleAvoidRects()
 
       const colCount = Math.max(1, Math.floor(width / COL_SPACING))

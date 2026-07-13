@@ -6,6 +6,7 @@ import { SiteHeader } from '@/components/site-header'
 import { DestinationScene } from '@/components/destination-scene'
 import { DestinationCard } from '@/components/destination-card'
 import { GalleryView } from '@/components/gallery-view'
+import { withViewTransition } from '@/lib/view-transition'
 
 type View = 'scene' | 'gallery'
 
@@ -24,7 +25,10 @@ export default function Home() {
         dark ? 'dark' : ''
       }`}
     >
-      <SiteHeader view={view} onViewChange={setView} />
+      <SiteHeader
+        view={view}
+        onViewChange={(v) => withViewTransition(() => setView(v))}
+      />
 
       {view === 'scene' ? (
         <>
@@ -33,13 +37,13 @@ export default function Home() {
           <DestinationCard
             destination={destinations[prev]}
             side="left"
-            onSelect={() => setIndex(prev)}
+            onSelect={() => withViewTransition(() => setIndex(prev))}
             dark={dark}
           />
           <DestinationCard
             destination={destinations[next]}
             side="right"
-            onSelect={() => setIndex(next)}
+            onSelect={() => withViewTransition(() => setIndex(next))}
             dark={dark}
           />
         </>
@@ -48,8 +52,10 @@ export default function Home() {
           destinations={destinations}
           initialIndex={index}
           onSelect={(i) => {
-            setIndex(i)
-            setView('scene')
+            withViewTransition(() => {
+              setIndex(i)
+              setView('scene')
+            })
           }}
         />
       )}
