@@ -46,10 +46,10 @@ export function DestinationScene({
           characters have room and don't get clipped at the canvas edge;
           columns without roof above them are still culled by the contour */}
       <div
-        className={`pointer-events-auto absolute bottom-[24%] left-1/2 top-[5%] -translate-x-1/2 ${sceneIn}`}
+        className={`pointer-events-auto absolute bottom-[14%] left-1/2 top-[5%] -translate-x-1/2 ${sceneIn}`}
         style={{
           // track the crown's viewport-relative size, plus swing room
-          width: `min(calc(clamp(240px, 30vw, 500px) * ${destination.curtainWidth} + 40vw), 98vw)`,
+          width: `min(calc(clamp(220px, 26vw, 440px) * ${destination.curtainWidth} + 40vw), 98vw)`,
         }}
       >
         <TextCurtain
@@ -69,7 +69,7 @@ export function DestinationScene({
         className={`absolute left-1/2 top-[5%] -translate-x-1/2 ${entrance ? 'roof-in' : ''}`}
         style={{
           // scale with the viewport so large screens get a large crown
-          width: dark ? 'clamp(240px, 30vw, 500px)' : 'clamp(300px, 34vw, 560px)',
+          width: dark ? 'clamp(220px, 26vw, 440px)' : 'clamp(300px, 34vw, 560px)',
           viewTransitionName: `crown-${destination.id}`,
         }}
       >
