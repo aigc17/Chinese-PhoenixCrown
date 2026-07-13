@@ -1,25 +1,29 @@
 /**
  * Synthesized brush/rustle sound for the text curtain, built entirely
  * with the Web Audio API — no audio files needed. Each "brush" is a
- * short burst of band-passed noise (fabric swish) topped with a faint
- * high sine partial (beads/chimes), with volume and brightness scaled
- * by how fast the hand moves through the strands.
+ * short burst of band-passed noise (fabric swish) topped with a high
+ * sine partial (beads/chimes), with volume and brightness scaled by
+ * how fast the hand moves through the strands.
+ *
+ * Browsers keep audio muted until the page receives a real user
+ * gesture (click / tap / key). Global unlock listeners are attached on
+ * first use so ANY interaction anywhere on the page arms the audio.
  */
 
 let ctx: AudioContext | null = null
 let master: GainNode | null = null
 let noiseBuffer: AudioBuffer | null = null
 let lastPlay = 0
-let unlocked = false
+let listenersAttached = false
 
 function ensureContext(): AudioContext | null {
   if (typeof window === 'undefined') return null
   if (!ctx) {
-    const AC = window.AudioContext ?? (window as any).webkitAudioContext
+    const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
     if (!AC) return null
     ctx = new AC()
     master = ctx.createGain()
-    master.gain.value = 0.5
+    master.gain.value = 0.85
     master.connect(ctx.destination)
 
     // 1s of white noise, reused by every brush
@@ -28,23 +32,48 @@ function ensureContext(): AudioContext | null {
     const data = noiseBuffer.getChannelData(0)
     for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1
   }
+  attachUnlockListeners()
   return ctx
 }
 
+/** Resume the context and play a silent kick (required on iOS). */
+function tryUnlock() {
+  if (!ctx) return
+  if (ctx.state === 'suspended') {
+    ctx.resume().catch(() => {})
+  }
+  // silent one-sample buffer "kick" fully arms WebAudio on iOS Safari
+  try {
+    const buf = ctx.createBuffer(1, 1, ctx.sampleRate)
+    const src = ctx.createBufferSource()
+    src.buffer = buf
+    src.connect(ctx.destination)
+    src.start(0)
+  } catch {
+    // ignore
+  }
+}
+
+function attachUnlockListeners() {
+  if (listenersAttached || typeof window === 'undefined') return
+  listenersAttached = true
+  const unlock = () => {
+    tryUnlock()
+    if (ctx && ctx.state === 'running') {
+      for (const ev of GESTURES) window.removeEventListener(ev, unlock)
+    }
+  }
+  const GESTURES = ['pointerdown', 'touchstart', 'keydown', 'click'] as const
+  for (const ev of GESTURES) window.addEventListener(ev, unlock, { passive: true })
+}
+
 /**
- * Browsers keep AudioContext suspended until a user gesture.
- * Call this from any pointerdown/click handler.
+ * Kept for callers that want to force an unlock attempt from their own
+ * gesture handlers (e.g. the curtain's pointerdown).
  */
 export function unlockCurtainAudio() {
-  const c = ensureContext()
-  if (!c) return
-  if (c.state === 'suspended') {
-    c.resume().then(() => {
-      unlocked = true
-    })
-  } else {
-    unlocked = true
-  }
+  ensureContext()
+  tryUnlock()
 }
 
 /**
@@ -56,9 +85,9 @@ export function playCurtainBrush(intensity: number) {
   const c = ensureContext()
   if (!c || !master || !noiseBuffer) return
   if (c.state === 'suspended') {
-    // try to resume — succeeds once the page has had any user activation
-    c.resume()
-    if (!unlocked) return
+    // succeeds once the page has sticky user activation (any past click)
+    c.resume().catch(() => {})
+    return
   }
 
   const now = performance.now()
@@ -66,7 +95,7 @@ export function playCurtainBrush(intensity: number) {
   lastPlay = now
 
   const t = c.currentTime
-  const amp = 0.04 + Math.min(1, intensity) * 0.14
+  const amp = 0.09 + Math.min(1, intensity) * 0.22
 
   // fabric swish: band-passed noise with a quick attack and soft tail
   const src = c.createBufferSource()
@@ -89,8 +118,8 @@ export function playCurtainBrush(intensity: number) {
   src.start(t, Math.random() * 0.5, 0.35)
   src.stop(t + 0.4)
 
-  // faint bead chime on stronger sweeps
-  if (intensity > 0.35 && Math.random() < 0.5) {
+  // bead chime — frequent enough to actually be heard
+  if (intensity > 0.12 && Math.random() < 0.8) {
     const osc = c.createOscillator()
     osc.type = 'sine'
     // pentatonic-ish set so overlapping chimes stay consonant
@@ -98,14 +127,14 @@ export function playCurtainBrush(intensity: number) {
     osc.frequency.value = notes[Math.floor(Math.random() * notes.length)]
 
     const og = c.createGain()
-    const oAmp = 0.012 + intensity * 0.02
+    const oAmp = 0.03 + intensity * 0.05
     og.gain.setValueAtTime(0, t)
     og.gain.linearRampToValueAtTime(oAmp, t + 0.008)
-    og.gain.exponentialRampToValueAtTime(0.0001, t + 0.6)
+    og.gain.exponentialRampToValueAtTime(0.0001, t + 0.7)
 
     osc.connect(og)
     og.connect(master)
     osc.start(t)
-    osc.stop(t + 0.65)
+    osc.stop(t + 0.75)
   }
 }

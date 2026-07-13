@@ -4,8 +4,15 @@ import Image from 'next/image'
 import type { Destination } from '@/lib/destinations'
 import { TextCurtain } from '@/components/text-curtain'
 
-export function DestinationScene({ destination }: { destination: Destination }) {
+export function DestinationScene({
+  destination,
+  entrance = true,
+}: {
+  destination: Destination
+  entrance?: boolean
+}) {
   const dark = destination.theme === 'dark'
+  const sceneIn = entrance ? 'scene-in' : ''
 
   return (
     <div key={destination.id} className="pointer-events-none absolute inset-0">
@@ -13,8 +20,9 @@ export function DestinationScene({ destination }: { destination: Destination }) 
         /* moonlit halo behind the crown instead of a cast shadow */
         <div
           aria-hidden="true"
-          className="absolute left-1/2 top-[10%] h-[46%] w-[420px] -translate-x-1/2 scene-in md:w-[540px]"
+          className={`absolute left-1/2 top-[8%] h-[50%] -translate-x-1/2 ${sceneIn}`}
           style={{
+            width: 'clamp(440px, 56vw, 900px)',
             background:
               'radial-gradient(ellipse at center, rgba(96,126,204,0.16) 0%, rgba(58,88,160,0.07) 45%, transparent 72%)',
             filter: 'blur(10px)',
