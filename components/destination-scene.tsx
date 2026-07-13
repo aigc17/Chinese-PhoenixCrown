@@ -1,0 +1,63 @@
+'use client'
+
+import Image from 'next/image'
+import type { Destination } from '@/lib/destinations'
+import { TextCurtain } from '@/components/text-curtain'
+
+export function DestinationScene({ destination }: { destination: Destination }) {
+  return (
+    <div key={destination.id} className="pointer-events-none absolute inset-0">
+      {/* soft cast shadow angled to the right, like afternoon light */}
+      <div
+        aria-hidden="true"
+        className="absolute left-1/2 top-[16%] h-[70%] w-[300px] scene-in md:w-[380px]"
+        style={{
+          transform: 'translateX(4%) skewX(-14deg)',
+          background:
+            'linear-gradient(100deg, transparent 30%, rgba(74,58,40,0.16) 55%, transparent 92%)',
+          filter: 'blur(18px)',
+        }}
+      />
+
+      {/* the hanging text curtain */}
+      <div
+        className="pointer-events-auto absolute bottom-[4%] left-1/2 -translate-x-1/2 scene-in"
+        style={{
+          top: `calc(14% + 150px - ${destination.roofOverlap}px)`,
+          width: `min(${destination.curtainWidth * 460}px, 74vw)`,
+        }}
+      >
+        <TextCurtain charPool={destination.charPool} color="#4a3a28" />
+      </div>
+
+      {/* the roof, layered above the curtain so strands hang from under it */}
+      <div className="roof-in absolute left-1/2 top-[6%] w-[300px] -translate-x-1/2 md:w-[420px]">
+        <Image
+          src={destination.roofSrc || '/placeholder.svg'}
+          alt={destination.roofAlt}
+          width={840}
+          height={480}
+          priority
+          className="h-auto w-full mix-blend-multiply"
+        />
+      </div>
+
+      {/* left copy block */}
+      <div className="absolute bottom-[8%] left-6 z-20 max-w-[300px] scene-in md:left-10 md:max-w-[360px]">
+        <p className="mb-4 font-mono text-[11px] text-muted-foreground">
+          <span className="text-accent">{destination.phrase}</span> {destination.phraseNote}
+        </p>
+        <h1 className="font-serif text-4xl leading-[1.05] text-foreground text-balance md:text-[52px]">
+          {destination.name}
+          <span className="text-muted-foreground"> —— </span>
+          {destination.headingRest}
+        </h1>
+      </div>
+
+      {/* bottom-right caption */}
+      <p className="absolute bottom-[8%] right-6 z-20 max-w-[220px] scene-in font-mono text-[11px] leading-relaxed text-muted-foreground md:right-10">
+        {destination.caption}
+      </p>
+    </div>
+  )
+}
