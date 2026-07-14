@@ -6,9 +6,9 @@
 
 ## 视频演示
 
-[![点击播放：点翠凤冠与垂落的文字珠帘](docs/screenshot-scene.png)](docs/demo.mp4)
+https://github.com/user-attachments/assets/25382d23-489d-4f71-b4b5-ad2c539a8e42
 
-> 点击画面播放 75 秒完整演示，包含场景切换、文字帘拨动与交互音效。
+> 75 秒完整演示，包含场景切换、文字帘拨动与交互音效。
 
 ## 项目简介
 
