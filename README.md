@@ -4,7 +4,11 @@
 
 **在线体验：<https://chinese-phoenixcrown.vercel.app>**
 
-![场景视图 —— 点翠凤冠与垂落的文字珠帘](docs/screenshot-scene.png)
+## 视频演示
+
+[![点击播放：点翠凤冠与垂落的文字珠帘](docs/screenshot-scene.png)](docs/demo.mp4)
+
+> 点击画面播放 75 秒完整演示，包含场景切换、文字帘拨动与交互音效。
 
 ## 项目简介
 
