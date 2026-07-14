@@ -23,6 +23,7 @@ Next.js 16 + React 19 + TypeScript 5.7 + Canvas 2D + Tailwind CSS 4
 结构、职责或文件成员变化时同步对应目录的 `CLAUDE.md`；代码文件需维护 INPUT/OUTPUT/POS 契约。
 
 ## 变更日志
+- 2026-07-14：README 改用 GitHub `user-attachments` 视频地址，直接渲染原生播放器。
 - 2026-07-14：建立 GEB 项目地图，并将 README 演示资源归入 `docs/`。
 
 **⚠️ 自指声明**：项目模块、技术栈或顶层职责变化时立即更新本文档。
