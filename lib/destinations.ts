@@ -16,6 +16,12 @@ export type Destination = {
   theme?: 'light' | 'dark'
   /** ink palette for the curtain; single-entry = uniform color */
   curtainColors?: string[]
+  /** strand length multiplier (default 1) — smaller = shorter curtain */
+  curtainLength?: number
+  /** 0-1: how uneven the ragged bottom edge is (default ~0.28) */
+  curtainRaggedness?: number
+  /** override the dark-scene halo/glow colors (defaults to moonlit blue) */
+  glow?: { halo: string; haloFaint: string; shadow: string }
 }
 
 export const destinations: Destination[] = [
@@ -145,9 +151,19 @@ export const destinations: Destination[] = [
     curtainWidth: 0.84,
     roofOverlap: 20,
     theme: 'dark',
-    // inks from the cape: vermilion silk, amber gold between red and
-    // yellow, warm brass, with rare jade-green bead accents
-    curtainColors: ['#e0873a', '#d45a42', '#e8b84b', '#e0873a', '#c94f38', '#f0c552', '#8fc9a0', '#e0873a'],
+    // inks from the cape: a tight red-to-gold range — vermilion silk,
+    // amber between red and yellow, warm gold. No green, no extras.
+    curtainColors: ['#d4553e', '#e0873a', '#e8b84b', '#e0873a', '#d4553e', '#e8b84b'],
+    // shorter strands with a strongly staggered bottom edge, so the
+    // text reads like uneven tassels rather than a solid wall
+    curtainLength: 0.55,
+    curtainRaggedness: 0.75,
+    // warm candlelight glow — no blue behind the red cape
+    glow: {
+      halo: 'rgba(224,135,58,0.13)',
+      haloFaint: 'rgba(196,90,50,0.06)',
+      shadow: 'rgba(232,164,74,0.3)',
+    },
   },
   {
     id: 'fenghou',

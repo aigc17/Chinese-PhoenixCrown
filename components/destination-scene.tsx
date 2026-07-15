@@ -13,6 +13,13 @@ export function DestinationScene({
 }) {
   const dark = destination.theme === 'dark'
   const sceneIn = entrance ? 'scene-in' : ''
+  // dark scenes default to a moonlit-blue glow; destinations can
+  // override it (e.g. warm candlelight behind the red cape)
+  const glow = destination.glow ?? {
+    halo: 'rgba(96,126,204,0.16)',
+    haloFaint: 'rgba(58,88,160,0.07)',
+    shadow: 'rgba(96,126,204,0.35)',
+  }
 
   return (
     <div key={destination.id} className="pointer-events-none absolute inset-0">
@@ -23,8 +30,7 @@ export function DestinationScene({
           className={`absolute left-1/2 top-[8%] h-[50%] -translate-x-1/2 ${sceneIn}`}
           style={{
             width: 'clamp(440px, 56vw, 900px)',
-            background:
-              'radial-gradient(ellipse at center, rgba(96,126,204,0.16) 0%, rgba(58,88,160,0.07) 45%, transparent 72%)',
+            background: `radial-gradient(ellipse at center, ${glow.halo} 0%, ${glow.haloFaint} 45%, transparent 72%)`,
             filter: 'blur(10px)',
           }}
         />
@@ -58,6 +64,8 @@ export function DestinationScene({
           colors={destination.curtainColors}
           inkAlpha={dark ? 1 : 0.62}
           luminous={dark}
+          lengthScale={destination.curtainLength}
+          raggedness={destination.curtainRaggedness}
           contourSelector={`#roof-${destination.id}`}
           avoidSelector="[data-curtain-avoid]"
         />
@@ -81,11 +89,12 @@ export function DestinationScene({
           height={480}
           priority
           crossOrigin="anonymous"
-          className={
-            dark
-              ? 'h-auto w-full drop-shadow-[0_0_28px_rgba(96,126,204,0.35)]'
-              : 'h-auto w-full drop-shadow-[0_14px_18px_rgba(74,58,40,0.22)]'
-          }
+          className="h-auto w-full"
+          style={{
+            filter: dark
+              ? `drop-shadow(0 0 28px ${glow.shadow})`
+              : 'drop-shadow(0 14px 18px rgba(74,58,40,0.22))',
+          }}
         />
       </div>
 
