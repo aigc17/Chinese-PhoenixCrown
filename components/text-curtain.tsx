@@ -39,6 +39,16 @@ type Props = {
    */
   luminous?: boolean
   /**
+   * Multiplier on strand length (default 1). Values below 1 keep the
+   * curtain shorter than the space available beneath the contour.
+   */
+  lengthScale?: number
+  /**
+   * 0-1: how uneven the ragged bottom edge is. Higher values make
+   * neighboring strands differ strongly in length (default 0.28).
+   */
+  raggedness?: number
+  /**
    * CSS selector for an <img> whose alpha silhouette the curtain
    * should hang from. Each column's pin point follows the image's
    * bottom contour; columns with no image above them are clipped.
@@ -74,6 +84,8 @@ export function TextCurtain({
   colors,
   inkAlpha = 0.62,
   luminous = false,
+  lengthScale = 1,
+  raggedness = 0.28,
   contourSelector,
   avoidSelector,
 }: Props) {
@@ -281,9 +293,15 @@ export function TextCurtain({
         // even a couple of characters may hang from a long tassel tip
         if (available < ROW_SPACING * 2) continue
 
-        // organic ragged bottom edge per column
-        const lengthJitter = 0.72 + rand(c * 7.3) * 0.28
-        const colRows = Math.max(2, Math.floor((available / ROW_SPACING) * lengthJitter))
+        // organic ragged bottom edge per column: a per-column random
+        // mixed with a slow wave so strand lengths cluster and stagger
+        // like real tassels instead of dithering uniformly
+        const wave = 0.5 + 0.5 * Math.sin(c * 0.55 + rand(c * 2.1) * 1.8)
+        const lengthJitter = 1 - raggedness + (rand(c * 7.3) * 0.55 + wave * 0.45) * raggedness
+        const colRows = Math.max(
+          2,
+          Math.floor((available / ROW_SPACING) * lengthScale * lengthJitter),
+        )
 
         // each column reads down the pool from its own offset, so the
         // curtain looks like continuous vertical prose, not noise
@@ -563,7 +581,7 @@ export function TextCurtain({
       window.removeEventListener('pointerdown', onPointerDown)
       document.removeEventListener('mouseleave', onPointerLeave)
     }
-  }, [charPool, color, colors, inkAlpha, luminous, contourSelector, avoidSelector])
+  }, [charPool, color, colors, inkAlpha, luminous, lengthScale, raggedness, contourSelector, avoidSelector])
 
   return (
     <canvas
