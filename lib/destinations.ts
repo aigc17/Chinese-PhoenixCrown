@@ -131,6 +131,25 @@ export const destinations: Destination[] = [
     curtainColors: ['#f0c552', '#f5d478', '#e8b84b', '#f0c552', '#f5d478', '#eda8a0', '#f0c552', '#f7e9c4'],
   },
   {
+    id: 'xiapei',
+    name: 'Xiapei',
+    headingRest: 'vermilion silk, gold peonies, and jade drops that fall like summer rain',
+    phrase: '霞帔云肩 (Xiápèi yúnjiān)',
+    phraseNote: 'The rosy-cloud cape',
+    caption:
+      'Twin phoenixes alight on shoulders of red brocade, and every gold tassel ends in a bead of green jade.',
+    roofSrc: '/images/cape-xiapei.png',
+    roofAlt: 'Chinese bridal cloud-shoulder cape of red embroidered silk with gold filigree phoenixes, peonies, pearls, jade-green beads and long hanging tassels',
+    charPool:
+      '霞帔云肩红妆十里凤穿牡丹金线绣缠枝莲纹流苏坠玉翡翠滴珠鸾凤和鸣锦缎朱红鎏金累丝珍珠璎珞花开富贵吉祥如意双凤朝阳彩云追月绮罗霓裳嫁衣如火盖头微掀执子之手与子偕老红豆相思金玉良缘天赐良缘凤凰于飞和鸣锵锵之子于归宜其室家桃之夭夭灼灼其华',
+    curtainWidth: 0.84,
+    roofOverlap: 20,
+    theme: 'dark',
+    // inks from the cape: vermilion silk, amber gold between red and
+    // yellow, warm brass, with rare jade-green bead accents
+    curtainColors: ['#e0873a', '#d45a42', '#e8b84b', '#e0873a', '#c94f38', '#f0c552', '#8fc9a0', '#e0873a'],
+  },
+  {
     id: 'fenghou',
     name: 'Fenghou',
     headingRest: 'nine dragons in gold, kingfisher gardens, and pearls sown like stars',
