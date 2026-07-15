@@ -158,11 +158,11 @@ export const destinations: Destination[] = [
     // text reads like uneven tassels rather than a solid wall
     curtainLength: 0.55,
     curtainRaggedness: 0.75,
-    // warm candlelight glow — no blue behind the red cape
+    // no glow at all — the red cape sits directly on the dark ground
     glow: {
-      halo: 'rgba(224,135,58,0.13)',
-      haloFaint: 'rgba(196,90,50,0.06)',
-      shadow: 'rgba(232,164,74,0.3)',
+      halo: 'transparent',
+      haloFaint: 'transparent',
+      shadow: 'transparent',
     },
   },
   {
