@@ -66,6 +66,7 @@ export function DestinationScene({
           luminous={dark}
           lengthScale={destination.curtainLength}
           raggedness={destination.curtainRaggedness}
+          glyphScale={destination.curtainGlyphScale}
           contourSelector={`#roof-${destination.id}`}
           avoidSelector="[data-curtain-avoid]"
         />
