@@ -58,7 +58,7 @@ const MOUSE_RADIUS = 120
 const DAMPING = 0.94
 const HOME_STIFFNESS = 0.014
 const CONSTRAINT_ITERATIONS = 2
-const ALPHA_THRESHOLD = 40
+const ALPHA_THRESHOLD = 24
 
 /**
  * A curtain of characters. Each column is a verlet chain pinned at
@@ -231,10 +231,22 @@ export function TextCurtain({
         contourW - 1,
         Math.max(0, Math.round(((pageX - imgRect.left) / imgRect.width) * contourW)),
       )
+      // sample a small horizontal window so hairline paths (tassel
+      // strands, bead chains) between column samples still register —
+      // half a column spacing in image pixels, capped to stay narrow
+      const halfWin = Math.min(
+        6,
+        Math.max(1, Math.round(((COL_SPACING / 2) * contourW) / imgRect.width)),
+      )
+      const x0 = Math.max(0, ix - halfWin)
+      const x1 = Math.min(contourW - 1, ix + halfWin)
       for (let iy = contourH - 1; iy >= 0; iy--) {
-        if (contourPixels[(iy * contourW + ix) * 4 + 3] > ALPHA_THRESHOLD) {
-          const pageY = imgRect.top + (iy / contourH) * imgRect.height
-          return pageY - canvasRect.top
+        const rowBase = iy * contourW
+        for (let sx = x0; sx <= x1; sx++) {
+          if (contourPixels[(rowBase + sx) * 4 + 3] > ALPHA_THRESHOLD) {
+            const pageY = imgRect.top + (iy / contourH) * imgRect.height
+            return pageY - canvasRect.top
+          }
         }
       }
       return null
@@ -266,11 +278,12 @@ export function TextCurtain({
         // strand starts just under the eave path
         const startY = topY + 6
         const available = height - startY
-        if (available < ROW_SPACING * 3) continue
+        // even a couple of characters may hang from a long tassel tip
+        if (available < ROW_SPACING * 2) continue
 
         // organic ragged bottom edge per column
         const lengthJitter = 0.72 + rand(c * 7.3) * 0.28
-        const colRows = Math.max(3, Math.floor((available / ROW_SPACING) * lengthJitter))
+        const colRows = Math.max(2, Math.floor((available / ROW_SPACING) * lengthJitter))
 
         // each column reads down the pool from its own offset, so the
         // curtain looks like continuous vertical prose, not noise

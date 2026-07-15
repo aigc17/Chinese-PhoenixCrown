@@ -145,9 +145,9 @@ export const destinations: Destination[] = [
     curtainWidth: 0.84,
     roofOverlap: 20,
     theme: 'dark',
-    // inks from the cape: vermilion silk, amber gold between red and
-    // yellow, warm brass, with rare jade-green bead accents
-    curtainColors: ['#e0873a', '#d45a42', '#e8b84b', '#e0873a', '#c94f38', '#f0c552', '#8fc9a0', '#e0873a'],
+    // inks from the cape: a tight red-to-gold range — vermilion silk,
+    // amber between red and yellow, warm gold. No green, no extras.
+    curtainColors: ['#d4553e', '#e0873a', '#e8b84b', '#e0873a', '#d4553e', '#e8b84b'],
   },
   {
     id: 'fenghou',
