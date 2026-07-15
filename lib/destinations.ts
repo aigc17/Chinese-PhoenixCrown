@@ -20,6 +20,8 @@ export type Destination = {
   curtainLength?: number
   /** 0-1: how uneven the ragged bottom edge is (default ~0.28) */
   curtainRaggedness?: number
+  /** glyph + grid scale (default 1) — smaller = finer, denser strands */
+  curtainGlyphScale?: number
   /** override the dark-scene halo/glow colors (defaults to moonlit blue) */
   glow?: { halo: string; haloFaint: string; shadow: string }
 }
@@ -158,6 +160,8 @@ export const destinations: Destination[] = [
     // text reads like uneven tassels rather than a solid wall
     curtainLength: 0.55,
     curtainRaggedness: 0.75,
+    // finer, tighter glyphs — thin dense threads echoing the tassels
+    curtainGlyphScale: 0.72,
     // no glow at all — the red cape sits directly on the dark ground
     glow: {
       halo: 'transparent',

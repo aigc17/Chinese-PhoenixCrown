@@ -49,6 +49,12 @@ type Props = {
    */
   raggedness?: number
   /**
+   * Scales the glyphs and the grid together (default 1). Values below
+   * 1 shrink the characters and pack the columns tighter, echoing
+   * fine tassel threads.
+   */
+  glyphScale?: number
+  /**
    * CSS selector for an <img> whose alpha silhouette the curtain
    * should hang from. Each column's pin point follows the image's
    * bottom contour; columns with no image above them are clipped.
@@ -86,6 +92,7 @@ export function TextCurtain({
   luminous = false,
   lengthScale = 1,
   raggedness = 0.28,
+  glyphScale = 1,
   contourSelector,
   avoidSelector,
 }: Props) {
@@ -96,6 +103,11 @@ export function TextCurtain({
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     if (!ctx) return
+
+    // scaled grid metrics — smaller glyphScale packs finer, denser strands
+    const colSpacing = COL_SPACING * glyphScale
+    const rowSpacing = ROW_SPACING * glyphScale
+    const fontSize = FONT_SIZE * glyphScale
 
     let columns: Node[][] = []
     let width = 0
@@ -126,7 +138,7 @@ export function TextCurtain({
       const inks = colors && colors.length > 0 ? Array.from(new Set(colors)) : [color]
       const chars = Array.from(new Set(charPool.split('')))
       const scale = dpr
-      atlasCellCss = FONT_SIZE + ATLAS_PAD * 2
+      atlasCellCss = fontSize + ATLAS_PAD * 2
       // exact float pitch so source rects line up with the scaled grid
       atlasCell = atlasCellCss * scale
 
@@ -143,7 +155,7 @@ export function TextCurtain({
         return
       }
       actx.scale(scale, scale)
-      actx.font = `${luminous ? 500 : 300} ${FONT_SIZE}px 'Songti SC', 'Noto Serif SC', serif`
+      actx.font = `${luminous ? 500 : 300} ${fontSize}px 'Songti SC', 'Noto Serif SC', serif`
       actx.textAlign = 'center'
       actx.textBaseline = 'middle'
 
@@ -248,7 +260,7 @@ export function TextCurtain({
       // half a column spacing in image pixels, capped to stay narrow
       const halfWin = Math.min(
         6,
-        Math.max(1, Math.round(((COL_SPACING / 2) * contourW) / imgRect.width)),
+        Math.max(1, Math.round(((colSpacing / 2) * contourW) / imgRect.width)),
       )
       const x0 = Math.max(0, ix - halfWin)
       const x1 = Math.min(contourW - 1, ix + halfWin)
@@ -277,12 +289,12 @@ export function TextCurtain({
       buildAtlas()
       sampleAvoidRects()
 
-      const colCount = Math.max(1, Math.floor(width / COL_SPACING))
-      const xOffset = (width - (colCount - 1) * COL_SPACING) / 2
+      const colCount = Math.max(1, Math.floor(width / colSpacing))
+      const xOffset = (width - (colCount - 1) * colSpacing) / 2
 
       columns = []
       for (let c = 0; c < colCount; c++) {
-        const colX = xOffset + c * COL_SPACING
+        const colX = xOffset + c * colSpacing
         const topY = contourYAt(colX)
         // clipped: no roof above this column, no strand hangs here
         if (topY === null) continue
@@ -291,7 +303,7 @@ export function TextCurtain({
         const startY = topY + 6
         const available = height - startY
         // even a couple of characters may hang from a long tassel tip
-        if (available < ROW_SPACING * 2) continue
+        if (available < rowSpacing * 2) continue
 
         // organic ragged bottom edge per column: a per-column random
         // mixed with a slow wave so strand lengths cluster and stagger
@@ -300,7 +312,7 @@ export function TextCurtain({
         const lengthJitter = 1 - raggedness + (rand(c * 7.3) * 0.55 + wave * 0.45) * raggedness
         const colRows = Math.max(
           2,
-          Math.floor((available / ROW_SPACING) * lengthScale * lengthJitter),
+          Math.floor((available / rowSpacing) * lengthScale * lengthJitter),
         )
 
         // each column reads down the pool from its own offset, so the
@@ -311,7 +323,7 @@ export function TextCurtain({
         for (let r = 0; r < colRows; r++) {
           const seed = c * 131 + r * 17
           const homeX = colX + (rand(seed + 3) - 0.5) * 1.6
-          const homeY = startY + r * ROW_SPACING
+          const homeY = startY + r * rowSpacing
 
           // palette mode paints strands in short vertical runs (~6 chars)
           // so colors read as woven threads, not random noise
@@ -400,7 +412,7 @@ export function TextCurtain({
               dx = 0
               dy = 0.0001
             }
-            const diff = (d - ROW_SPACING) / d
+            const diff = (d - rowSpacing) / d
             if (r === 1) {
               // top link pinned to the roof path
               b.x -= dx * diff
@@ -581,7 +593,7 @@ export function TextCurtain({
       window.removeEventListener('pointerdown', onPointerDown)
       document.removeEventListener('mouseleave', onPointerLeave)
     }
-  }, [charPool, color, colors, inkAlpha, luminous, lengthScale, raggedness, contourSelector, avoidSelector])
+  }, [charPool, color, colors, inkAlpha, luminous, lengthScale, raggedness, glyphScale, contourSelector, avoidSelector])
 
   return (
     <canvas
