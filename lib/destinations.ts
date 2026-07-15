@@ -139,6 +139,25 @@ export const destinations: Destination[] = [
     curtainColors: ['#f0c552', '#f5d478', '#e8b84b', '#f0c552', '#f5d478', '#eda8a0', '#f0c552', '#f7e9c4'],
   },
   {
+    id: 'fenghou',
+    name: 'Fenghou',
+    headingRest: 'nine dragons in gold, kingfisher gardens, and pearls sown like stars',
+    phrase: '母仪天下 (Mǔyí tiānxià)',
+    phraseNote: 'Mother of all under heaven',
+    caption:
+      'Gold dragons prowl above kingfisher meadows, where sapphires and rubies bloom in rings of seed pearl.',
+    roofSrc: '/images/crown-empress.png',
+    roofAlt: 'Ming empress phoenix crown with gold filigree dragons, kingfisher-blue enamel flowers, seed pearls, sapphires, rubies and a coral-red base band',
+    charPool:
+      '母仪天下九龙四凤翚翟褘衣珠翠点染龙翔凤舞金龙衔珠翠云铺顶宝钿花树博鬓垂珠青纁玉佩山河永固社稷安宁凤印玺绶椒房殿宇长信宫灯坤宁昭阳德配天地泽被苍生垂帘听政懿旨凤诏册立大典宗庙礼乐钟鼎彝器玉圭金册翟车凤辇仪仗卤簿宫娥彩仗琼林玉树瑶台阆苑',
+    curtainWidth: 0.86,
+    roofOverlap: 20,
+    theme: 'dark',
+    // inks from the empress crown: kingfisher blue, malachite green,
+    // sapphire, ruby red, coral, seed pearl
+    curtainColors: ['#5c8fe0', '#4bab8a', '#3a5fc0', '#c05252', '#e08a7a', '#ede8d8'],
+  },
+  {
     id: 'xiapei',
     name: 'Xiapei',
     headingRest: 'vermilion silk, gold peonies, and jade drops that fall like summer rain',
@@ -168,24 +187,5 @@ export const destinations: Destination[] = [
       haloFaint: 'transparent',
       shadow: 'transparent',
     },
-  },
-  {
-    id: 'fenghou',
-    name: 'Fenghou',
-    headingRest: 'nine dragons in gold, kingfisher gardens, and pearls sown like stars',
-    phrase: '母仪天下 (Mǔyí tiānxià)',
-    phraseNote: 'Mother of all under heaven',
-    caption:
-      'Gold dragons prowl above kingfisher meadows, where sapphires and rubies bloom in rings of seed pearl.',
-    roofSrc: '/images/crown-empress.png',
-    roofAlt: 'Ming empress phoenix crown with gold filigree dragons, kingfisher-blue enamel flowers, seed pearls, sapphires, rubies and a coral-red base band',
-    charPool:
-      '母仪天下九龙四凤翚翟褘衣珠翠点染龙翔凤舞金龙衔珠翠云铺顶宝钿花树博鬓垂珠青纁玉佩山河永固社稷安宁凤印玺绶椒房殿宇长信宫灯坤宁昭阳德配天地泽被苍生垂帘听政懿旨凤诏册立大典宗庙礼乐钟鼎彝器玉圭金册翟车凤辇仪仗卤簿宫娥彩仗琼林玉树瑶台阆苑',
-    curtainWidth: 0.86,
-    roofOverlap: 20,
-    theme: 'dark',
-    // inks from the empress crown: kingfisher blue, malachite green,
-    // sapphire, ruby red, coral, seed pearl
-    curtainColors: ['#5c8fe0', '#4bab8a', '#3a5fc0', '#c05252', '#e08a7a', '#ede8d8'],
   },
 ]
